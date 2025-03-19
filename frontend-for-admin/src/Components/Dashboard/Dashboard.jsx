@@ -7,7 +7,7 @@ export default function Dashboard(){
     return (
         <>
         <div className={style.body}>
-           
+           <h2>dashboard</h2>
         </div>
         
         </>

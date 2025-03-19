@@ -1,0 +1,18 @@
+.menu{
+   
+    height: 100vh;
+
+}
+li{
+    
+    list-style-type: none;
+    padding: .5em;
+    cursor: pointer;
+ 
+    margin: 2%;
+    border-radius: .5em;
+}
+.list{
+ 
+   
+}
