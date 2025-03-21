@@ -5,33 +5,22 @@ export default function CardComponent({
   title,
   icon,
   value,
-  change,
-  trendArrow,
-  trendColor,
   description,
-  colorClass,
-  animationDelayClass,
+  colorClass
 }) {
   return (
-    <div className={`${sc.card} ${sc.overflowHidden} ${animationDelayClass}`}>
-      {colorClass && <div className={`${sc.cardHeaderBar} ${colorClass}`} />}
-      <div className={sc.cardHeader}>
-        <h3 className={sc.cardTitle}>{title}</h3>
-        {icon && <div className={sc.cardIcon}>{icon}</div>}
+    <div className={`${sc.card} ${colorClass}`}>
+      <div className={sc.first}>
+          <h3 className={sc.title}>{title}</h3>
+          <div className={sc.icon}>{icon}</div>
       </div>
-      <div className={sc.cardContent}>
-        <div className={sc.cardValue}>{value}</div>
-        <div className={sc.cardInfo}>
-          {change !== undefined && (
-            <span className={`${sc.cardChange} ${trendColor}`}>
-              {trendArrow} {Math.abs(change)}%
-            </span>
-          )}
-          {description && (
-            <p className={sc.cardDescription}>{description}</p>
-          )}
-        </div>
+       
+      <div className={sc.content}>
+    
+        <p className={sc.value}>{value}</p>
+        <p className={sc.description}>{description}</p>
       </div>
     </div>
   );
 }
+
