@@ -8,22 +8,26 @@ import { BrowserRouter,Routes,Route } from 'react-router-dom';
 function App() {
   return (
     <div className='main'>
+        <div className='menu'>
+            <Menu />
+        </div>
 
-       <Menu />
+        <div  className='programs'>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={ <Dashboard />} />
+            <Route path="/:program/students" element={ <Students />} />
+            <Route path="/:program/attendance" element={ <Dashboard />} />
+            <Route path="/:program/payment" element={ <Dashboard />} />
+            
 
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={ <Dashboard />} />
-          <Route path="/:program/students" element={ <Students />} />
-          <Route path="/:program/attendance" element={ <Dashboard />} />
-          <Route path="/:program/payment" element={ <Dashboard />} />
-          
-
-          
-        </Routes>
-      </BrowserRouter>
+            
+          </Routes>
+        </BrowserRouter>
+        </div>
+        
       
-      <Dashboard />
+      
     </div>
   )
 }

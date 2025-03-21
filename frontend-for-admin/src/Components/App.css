@@ -1,6 +1,15 @@
 .main{
-    display: grid;
-    grid-template-columns: 20% auto;
-    height: 100px;
-    margin: 0px;
+    display: flex;
+    flex-direction: row;
+
+    
 }
+
+.menu{
+
+}
+
+.programs{
+    width: 100%;
+}
+
