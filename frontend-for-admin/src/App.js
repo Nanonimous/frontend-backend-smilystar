@@ -14,7 +14,9 @@ const App = () => (
 <>        
   <div className="main">
     <div className="l">
-      <Menu />
+    
+    <Menu />
+
     </div>
  
 
