@@ -1,5 +1,6 @@
 import React from "react";
 import style from './Dashboard.module.css';
+import { FaUser, FaCalendarAlt, FaDollarSign,FaPercentage  } from "react-icons/fa";
 import Navbar from "../Layout/Navbar/Navbar.jsx";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import Startcard from './Startcard.jsx';
@@ -13,11 +14,35 @@ export default function Dashboard() {
                     <h1>Dashboard</h1>
                     <h3>Overview of your school's programs and performance metrics</h3>
 
-                    <div className={style.cards}>
-                        <Startcard title="Total Students" value="50" description="Enrolled across all programs" icon={<FaArrowUp />} trendArrow={<FaArrowDown />} trendColor="red" change={2.5} />
-                        <Startcard title="Attendance Rate" value="80.6%" description="Average across all programs" icon={<FaArrowUp />} trendArrow={<FaArrowDown />} trendColor="red" change={2.5} />
-                        <Startcard title="Payment Collected" value="₹1272.4k" description="Total revenue collected" icon={<FaArrowUp />} trendArrow={<FaArrowUp />} trendColor="green" change={5.2} />
-                        <Startcard title="Payment Rate" value="70%" description="₹539.7k pending" icon={<FaArrowDown />} trendArrow={<FaArrowDown />} trendColor="red" change={1.8} />
+                    <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+                            <Startcard
+                                title="Total Students"
+                                icon={<FaUser />}
+                                value="50"
+                                description="Enrolled across all programs"
+                                colorClass="bg-blue-100"
+                            />
+                            <Startcard
+                                title="Attendance Rate"
+                                icon={<FaCalendarAlt />}
+                                value="80.6%"
+                                description="Average across all programs"
+                                colorClass="bg-green-100"
+                            />
+                            <Startcard
+                                title="Payment Collected"
+                                icon={<FaDollarSign />}
+                                value="₹12.4k"
+                                description="Total revenue collected"
+                                colorClass="bg-yellow-100"
+                            />
+                             <Startcard
+                                title="Payment Rate"
+                                icon={<FaPercentage  />}
+                                value="66%"
+                                description="↓ 1.8% ₹616.4k pending"
+                                colorClass="bg-yellow-100"
+                            />
                     </div>
 
                     <h2>Program Overview</h2>

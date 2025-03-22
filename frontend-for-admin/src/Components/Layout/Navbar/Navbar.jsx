@@ -17,7 +17,7 @@ export default function Navbar() {
                             alt="notification icon" 
                             className={ns.icon}
                         />
-                        <span className={ns.badge}>3</span>
+                        <span className={ns.badge}>7</span>
                     </div>
                     <div className={ns.profile}>
 
