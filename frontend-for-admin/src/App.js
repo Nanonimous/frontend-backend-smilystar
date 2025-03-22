@@ -7,8 +7,18 @@ import Enquiry from "./Pages/Enquiry";
 import Login from "./Pages/Login";
 import NotFound from "./Pages/Notfound";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Menu from "../src/Components/Layout/Sidebar/Menu.jsx"
+import './App.css';
 
 const App = () => (
+<>        
+  <div className="main">
+    <div className="l">
+      <Menu />
+    </div>
+ 
+
+  <div className="programs">
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<Login />} />
@@ -20,6 +30,12 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
+
+          </div>
+  </div>
+      
+
+</>
 );
 
 export default App;

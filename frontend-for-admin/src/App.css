@@ -1,10 +1,12 @@
 .main{
     display: flex;
     flex-direction: row;
-
+    
     
 }
-
+/* .l{
+    width: 10%;
+} */
 
 
 .programs{
