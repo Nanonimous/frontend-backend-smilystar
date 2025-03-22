@@ -1,8 +1,8 @@
 import React from "react";
 import style from './Dashboard.module.css';
-import Navbar from "../Navbar/Navebar";
+import Navbar from "../Layout/Navbar/Navbar.jsx";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
-import Startcard from '../Dashboard/Startcard/Startcard';
+import Startcard from './Startcard.jsx';
 
 export default function Dashboard() {
     return (
