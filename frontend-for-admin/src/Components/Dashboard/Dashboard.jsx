@@ -1,7 +1,7 @@
 import React from "react";
 import style from './Dashboard.module.css';
-import Navbar from "../Navbar/Navebar";
-import Startcard from '../Dashboard/Startcard/Startcard';
+import Navbar from "../Layout/Navbar/Navbar";
+import Startcard from '../Dashboard/Startcard';
 import ProgramCard from "./Programmingcard/Programmingcard";
 
 import { FaUser, FaCalendarAlt, FaDollarSign,FaPercentage  } from "react-icons/fa";

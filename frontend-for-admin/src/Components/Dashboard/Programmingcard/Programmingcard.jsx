@@ -5,7 +5,13 @@ import { FaArrowRight } from "react-icons/fa";
 export default function ProgramCard({ title, icon, value, description, attendance, payment, color }) {
   return (
     <div className={`${pc.card} ${pc[color]}`}>
+
+         
+
       <div className={pc.cardHeader}>
+
+      <div className={pc.progress} style={{ width: `100%` }}></div>
+
         <div className={pc.cardIcon}>{icon}</div>
         <h2 className={pc.cardTitle}>{title}</h2>
         <span className={pc.cardValue}>{value}</span>
