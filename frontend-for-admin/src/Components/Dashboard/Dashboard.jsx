@@ -2,9 +2,10 @@ import React from "react";
 import style from './Dashboard.module.css';
 import Navbar from "../Navbar/Navebar";
 import Startcard from '../Dashboard/Startcard/Startcard';
+import ProgramCard from "./Programmingcard/Programmingcard";
 
 import { FaUser, FaCalendarAlt, FaDollarSign,FaPercentage  } from "react-icons/fa";
-
+import { FaMusic, FaLanguage, FaBaby, FaDrum } from "react-icons/fa";
 export default function Dashboard() {
     return (
         <>
@@ -45,14 +46,47 @@ export default function Dashboard() {
                             />
                     </div>
 
-                    <h2>Program Overview</h2>
+                    <h1>Program Overview</h1>
                     <div className={style.programs}>
-                        <Startcard title="Bharatanatyam" value="9" description="Classical Indian dance form from Tamil Nadu" change={79} trendColor="red" />
-                        <Startcard title="Hindi" value="9" description="Language learning program for Hindi" change={80.9} trendColor="blue" />
-                        <Startcard title="Daycare" value="21" description="Full-day childcare and early education program" change={80.5} trendColor="green" />
-                        <Startcard title="Carnatic" value="11" description="Classical music tradition from South India" change={81.8} trendColor="purple" />
-                    </div>
-
+                  
+    
+            <ProgramCard
+            title="Bharatanatyam"
+            icon={<FaDrum />}
+            value={17}
+            description="Classical Indian dance form from Tamil Nadu"
+            attendance={83.6}
+            payment={68}
+            color="red"
+            />
+            <ProgramCard
+            title="Hindi"
+            icon={<FaLanguage />}
+            value={8}
+            description="Language learning program for Hindi"
+            attendance={76.6}
+            payment={67}
+            color="blue"
+            />
+            <ProgramCard
+            title="Daycare"
+            icon={<FaBaby />}
+            value={15}
+            description="Full-day childcare and early education program"
+            attendance={80.9}
+            payment={70}
+            color="green"
+            />
+            <ProgramCard
+            title="Carnatic"
+            icon={<FaMusic />}
+            value={10}
+            description="Classical music tradition from South India"
+            attendance={79.4}
+            payment={68}
+            color="purple"
+            />
+        </div>
                     <h2>Quick Actions</h2>
                     <div className={style.quickActions}>
                         <button className={style.actionBtn}>Take Attendance</button>

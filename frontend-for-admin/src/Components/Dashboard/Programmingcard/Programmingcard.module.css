@@ -1,0 +1,88 @@
+.card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    width: 350px;
+    margin: 10px;
+    transition: transform 0.3s;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  
+  .cardIcon {
+    font-size: 24px;
+  }
+  
+  .cardTitle {
+    margin-left: 8px;
+    font-weight: bold;
+  }
+  
+  .cardValue {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .cardDescription {
+    color: gray;
+    margin: 8px 0;
+  }
+  
+  .cardMetrics {
+    margin: 10px 0;
+  }
+  
+  .metric {
+    margin: 5px 0;
+  }
+  
+  .progressBar {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    height: 8px;
+    margin: 4px 0;
+  }
+  
+  .progress {
+    height: 8px;
+    border-radius: 4px;
+  }
+  
+  .rate {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .viewButton {
+    margin-top: 12px;
+    background-color: transparent;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+  }
+  
+  .viewButton:hover {
+    text-decoration: underline;
+  }
+  
+
+  .red .progress { background-color: #e57373; }
+  .blue .progress { background-color: #64b5f6; }
+  .green .progress { background-color: #81c784; }
+  .purple .progress { background-color: #9575cd; }
+  
+
