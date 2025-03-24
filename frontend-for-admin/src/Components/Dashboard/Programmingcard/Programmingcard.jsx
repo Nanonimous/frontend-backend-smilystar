@@ -4,8 +4,17 @@ import { FaArrowRight } from "react-icons/fa";
 
 export default function ProgramCard({ title, icon, value, description, attendance, payment, color }) {
   return (
-    // <div className={pc.progress} style={{ width: `100%` }}></div>
+    <>
+
+   
+    <div className={pc.top}>
+    <div className={pc.progresstop} style={{ width: `100%`,backgroundColor:`${color}` }}></div>
+    
+    </div>
+
+    
     <div className={`${pc.card} ${pc[color]}`}>
+
 
 
 
@@ -41,5 +50,7 @@ export default function ProgramCard({ title, icon, value, description, attendanc
         View Students <FaArrowRight />
       </button>
     </div>
+
+    </>
   );
 }

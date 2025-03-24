@@ -7,6 +7,10 @@
     margin: 10px;
     transition: transform 0.3s;
   }
+
+  .top{
+    margin: 0%;
+  }
   
   .card:hover {
     transform: translateY(-5px);
@@ -56,6 +60,11 @@
   
   .progress {
 
+    height: 8px;
+    border-radius: 4px;
+  }
+
+  .progresstop{
     height: 8px;
     border-radius: 4px;
   }
