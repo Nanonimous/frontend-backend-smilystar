@@ -2,8 +2,12 @@
     padding: 20px;
     background-color: #f5f7fa;
 }
-.container {
-    
+.maincontainer {
+    display: grid;
+    grid-template-columns: auto auto;  
+}
+.sidebar{
+    border-right: 1px solid #777;
 }
 .cards, .programs, .quickActions {
     display: flex;
@@ -38,4 +42,16 @@
 }
 .actionBtn:hover {
     background-color: #0056b3;
+}
+
+.dimBackground {
+    opacity: 0.5;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none; /* Prevent clicks when menu is open */
+  }
+
+@media (max-width: 768px) {
+    .sidebar{
+        border-right: 1px solid #ffffff;
+    }
 }

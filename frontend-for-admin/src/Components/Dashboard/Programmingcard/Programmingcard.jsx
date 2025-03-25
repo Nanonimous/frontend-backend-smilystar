@@ -6,17 +6,13 @@ export default function ProgramCard({ title, icon, value, description, attendanc
   return (
     <>
 
-   
-    <div className={pc.top}>
-    <div className={pc.progresstop} style={{ width: `100%`,backgroundColor:`${color}` }}></div>
-    
-    </div>
-
-    
     <div className={`${pc.card} ${pc[color]}`}>
+            <div className={pc.top}>
+            <div className={pc.progresstop} style={{ width: `95%` }}></div>
+            </div>
 
 
-
+<div className={pc.cardinner}>
 
       <div className={pc.cardHeader}>
 
@@ -49,7 +45,10 @@ export default function ProgramCard({ title, icon, value, description, attendanc
       <button className={pc.viewButton}>
         View Students <FaArrowRight />
       </button>
+
+
     </div>
+</div>
 
     </>
   );

@@ -1,5 +1,5 @@
 // import { Layout } from "./components/Layouts/Layout";
-import Dashboard from "./Components/Dashboard/Dashboard.jsx";
+import Dashboard from "../src/Pages/Dashboard.jsx";
 import Attendance from "./Pages/Attendance";
 import Payment from "./Pages/Payment";
 import Students from "./Pages/Students";
@@ -7,20 +7,12 @@ import Enquiry from "./Pages/Enquiry";
 import Login from "./Pages/Login";
 import NotFound from "./Pages/Notfound";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Menu from "../src/Components/Layout/Sidebar/Menu.jsx"
-import './App.css';
+import Menu from "../src/Components/Layout/Sidebar/Menu.jsx";
+
 
 const App = () => (
 <>        
-  <div className="main">
-    <div className="l">
-    
-    <Menu />
-
-    </div>
- 
-
-  <div className="programs">
+  
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<Login />} />
@@ -33,9 +25,7 @@ const App = () => (
             </Routes>
           </BrowserRouter>
 
-          </div>
-  </div>
-      
+
 
 </>
 );
