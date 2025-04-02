@@ -1,0 +1,22 @@
+.body {
+    padding: 20px;
+    background-color: #f5f7fa;
+}
+
+
+.maincontainer {
+    display: grid;
+    grid-template-columns: 15% auto;  
+}
+.sidebar{
+    border-right: 1px solid #777;
+}
+
+.Startcard{
+    display: flex;
+    flex-direction: row;
+    gap: 3rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}

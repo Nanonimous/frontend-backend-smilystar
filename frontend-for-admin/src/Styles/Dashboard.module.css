@@ -4,7 +4,7 @@
 }
 .maincontainer {
     display: grid;
-    grid-template-columns: auto auto;  
+    grid-template-columns:15% auto;  
 }
 .sidebar{
     border-right: 1px solid #777;

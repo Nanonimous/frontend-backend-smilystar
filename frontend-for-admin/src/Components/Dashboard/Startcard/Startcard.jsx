@@ -9,10 +9,15 @@ export default function Startcard({
   description,
   colorClass,
 }) {
+var totalCards;
+  const isComplete = title && icon && value && description && colorClass;
+
+  // Determine width dynamically
+  const cardWidth = isComplete ? "20%" : "12%"; 
   return (
 
     
-    <div className={`${sc.card} ${colorClass}`}>
+    <div className={`${sc.card} ${colorClass}`} style={{ width: cardWidth }}>
       <div className={sc.first}>
         <h3 className={sc.title}>{title}</h3>
         <div className={sc.icon}>{icon}</div>
