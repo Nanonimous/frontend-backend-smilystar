@@ -127,7 +127,7 @@ export default function Enquiry(){
 
             </div>
 
-            <EnquiryTable enquiries={enquiries} />
+            <EnquiryTable enquiries={enquiries} dataType={tablename} />
 
 
             </div>

@@ -2,34 +2,33 @@ import React, { useState } from "react";
 import EnrollPopup from "./EnrollPopup"; // Import the popup form component
 import es from "./EnquiryTable.module.css"; // Import CSS file
 
-const EnquiryTable = ({ enquiries }) => {
+const EnquiryTable = ({ data, dataType }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [selectedEnquiry, setSelectedEnquiry] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [popupMode, setPopupMode] = useState(""); // "view" or "enroll"
 
-
-  const handleViewClick = (enquiry) => {
-    setSelectedEnquiry(enquiry);
+  const handleViewClick = (item) => {
+    setSelectedItem(item);
     setPopupMode("view");
     setIsPopupOpen(true);
   };
 
-  const handleEnrollClick = (enquiry) => {
-    setSelectedEnquiry(enquiry);
+  const handleEnrollClick = (item) => {
+    setSelectedItem(item);
     setPopupMode("enroll");
     setIsPopupOpen(true);
   };
 
-  const handlemarkcontackted=(id)=>{
+  const handleMarkContacted = (id) => {
+    // Code to update the status of an enquiry
+    console.log(`Marking enquiry with ID ${id} as contacted`);
+  };
 
-
-    //to write code to update status
-  }
   return (
     <div className={es["table-container"]}>
       <input
         type="text"
-        placeholder="Search enquiries..."
+        placeholder={`Search ${dataType}...`}
         className={es["search-box"]}
       />
       <table className={es["enquiry-table"]}>
@@ -38,42 +37,70 @@ const EnquiryTable = ({ enquiries }) => {
             <th>ID</th>
             <th>Name</th>
             <th>Contact</th>
-            <th>Program</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Actions</th>
+            {dataType === "enquiry" ? (
+              <>
+                <th>Program</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </>
+            ) : (
+              <>
+                <th>Father name</th>
+                <th>Mother name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Fees</th>
+              </>
+            )}
+          
           </tr>
         </thead>
         <tbody>
-          {enquiries.map((enquiry, index) => (
+          {data.map((item, index) => (
             <tr key={index}>
-              <td>{enquiry.id}</td>
-              <td>{enquiry.name}</td>
-              <td>{enquiry.contact}</td>
-              <td>{enquiry.program}</td>
-              <td>{enquiry.date}</td>
-              <td>
-                <span className={`${es.status} ${es[enquiry.status.toLowerCase()]}`}>
-                  {enquiry.status}
-                </span>
-              </td>
-              <td className={es["action-buttons"]}>
-                  <button className={es["view-btn"]} onClick={() => handleViewClick(enquiry)}>
+              <td>{item.id}</td>
+              <td>{item.name}</td>
+              <td>{item.contact}</td>
+              {dataType === "enquiry" ? (
+                <>
+                  <td>{item.program}</td>
+                  <td>{item.date}</td>
+                  <td>
+                    <span className={`${es.status} ${es[item.status.toLowerCase()]}`}>
+                      {item.status}
+                    </span>
+                  </td>
+                  <td className={es["action-buttons"]}>
+                <button className={es["view-btn"]} onClick={() => handleViewClick(item)}>
                   View
                 </button>
-                {enquiry.status === "New" && (
-                  <button onClick={()=>handlemarkcontackted(enquiry.id)} className={es["contact-btn"]}>Mark Contacted</button>
-                )}
-                {enquiry.status !== "Enrolled" && (
+                {dataType === "enquiries" && item.status === "New" && (
                   <button
-                    className={es["enroll-btn"]}
-                    onClick={() => handleEnrollClick(enquiry)}
+                    onClick={() => handleMarkContacted(item.id)}
+                    className={es["contact-btn"]}
                   >
+                    Mark Contacted
+                  </button>
+                )}
+                {dataType === "enquiries" && item.status !== "Enrolled" && (
+                  <button className={es["enroll-btn"]} onClick={() => handleEnrollClick(item)}>
                     Enroll
                   </button>
                 )}
                 <button className={es["close-btn"]}>Close</button>
               </td>
+                </>
+              ) : (
+                <>
+                  <td>{item.father_name}</td>
+                  <td>{item.mother_name}</td>
+                  <td>{item.age}</td>
+                  <td>{item.gender}</td>
+                  <td>{item.monthly_fee}</td>
+                </>
+              )}
+          
             </tr>
           ))}
         </tbody>
@@ -84,7 +111,7 @@ const EnquiryTable = ({ enquiries }) => {
         <EnrollPopup
           isOpen={isPopupOpen}
           onClose={() => setIsPopupOpen(false)}
-          enquiry={selectedEnquiry}
+          enquiry={selectedItem}
           mode={popupMode} // Pass mode to distinguish between view and enroll
         />
       )}
