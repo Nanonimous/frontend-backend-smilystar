@@ -1,0 +1,105 @@
+.search-box {
+    width: 80%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 1rem;
+  }
+
+  .options{
+    display: flex;
+    gap: 2rem;
+    padding: 5px;
+  }
+
+  .multiAss{
+    display: flex;
+    gap: 1rem;
+  }
+
+  .multiAss input{
+    cursor: pointer;
+  }
+
+  .enquiry-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+  }
+  
+  .enquiry-table th, .enquiry-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .enquiry-table th {
+    background: #f1f1f1;
+  }
+  
+  /* Status Colors */
+  .status {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+  
+  .status.new {
+    background: #cce5ff;
+    color: #004085;
+  }
+  
+  .status.contacted {
+    background: #e2d9f3;
+    color: #5a3d9a;
+  }
+  
+  .status.enrolled {
+    background: #d4edda;
+    color: #155724;
+  }
+  
+  .status.closed {
+    background: #d6d8d9;
+    color: #1b1e21;
+  }
+  
+  /* Action Buttons */
+  .action-buttons button {
+    margin: 3px;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .view-btn {
+    background: #007bff;
+    color: white;
+  }
+  
+
+  .contact-btn {
+    background: #d1c4e9;
+    color: black;
+  }
+  
+  .enroll-btn {
+    background: #28a745;
+    color: white;
+  }
+  
+  .close-btn {
+    background: #dc3545;
+    color: white;
+  }
+
+  .selectAll{
+    cursor: pointer;
+  }
+  
+  .eachCheckBox{
+    cursor: pointer;
+  }
