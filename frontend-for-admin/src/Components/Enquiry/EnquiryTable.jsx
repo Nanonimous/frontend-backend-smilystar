@@ -3,7 +3,6 @@ import EnrollPopup from "./EnrollPopup"; // Import the popup form component
 import es from "./EnquiryTable.module.css"; // Import CSS file
 
 const EnquiryTable = ({ datas, dataType }) => {
-  console.log(datas, dataType);
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
