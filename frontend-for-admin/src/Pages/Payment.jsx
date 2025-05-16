@@ -101,7 +101,7 @@ export default function Payment(){
   const [tableData, setTableData] = useState([]);
     const location = useLocation(); // Get the current location
     console.log("this is for testing",location.pathname.split("/"));
-    const isPaymentPage = location.pathname.split("/").filter(Boolean).pop() === "payment";
+    const isPaymentPage = location.pathname.split("/").filter(Boolean).pop() === "payments";
     const cardsToShow = isPaymentPage ? paymentcardData : attendancecardData;
         ;
 
@@ -149,7 +149,7 @@ export default function Payment(){
 
 
             </div>
-            <Table datas = {location.pathname.split("/").filter(Boolean).pop() == "payment" ? sampleDataPayment : sampleDataAttendance} dataType = {location.pathname.split("/").filter(Boolean).pop()}/>
+            <Table datas = {location.pathname.split("/").filter(Boolean).pop() == "payments" ? sampleDataPayment : sampleDataAttendance} dataType = {location.pathname.split("/").filter(Boolean).pop()}/>
 
 
 

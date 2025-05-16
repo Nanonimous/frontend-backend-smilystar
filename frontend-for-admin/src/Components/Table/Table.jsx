@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import ss from "./Table.module.css";
+import axios from "axios";
 
 
 const Table = ({ datas, dataType }) =>{
-    console.log(datas, dataType);
+    console.log("in the testing section " , datas, dataType);
 
     const [searchTerm, setSearchTerm] = useState(""); // State for search input
     const filteredData = datas?.filter((item) => {
@@ -53,6 +54,15 @@ const Table = ({ datas, dataType }) =>{
         "vijay"
       ]
     
+      const stuPaid = (stuId) => {
+        console.log("id coming uhh paid" , stuId);
+
+      }
+
+      const stuClose = (stuId) => {
+        console.log("id coming uhh close" , stuId)
+
+      }
     return (
         <div className={ss["table-container"]}>
         <div className={ss.options}>
@@ -67,7 +77,7 @@ const Table = ({ datas, dataType }) =>{
             <div className={ss.multiAss}>
             <input
                 type="submit"
-                value={dataType === "payment"?"✅ Paid" :"✅ Mark Present" }
+                value={dataType === "payments"?"✅ Paid" :"✅ Mark Present" }
                 name="MarkPr"
                 className={ss.MarkPr}
                 disabled
@@ -94,7 +104,7 @@ const Table = ({ datas, dataType }) =>{
             <th>ID</th>
             <th>Name</th>
             <th>Contact</th>
-            {dataType === "payment" ? (
+            {dataType === "payments" ? (
               <>
                 <th>price</th>
                 <th>status</th>
@@ -113,17 +123,19 @@ const Table = ({ datas, dataType }) =>{
               <td><input type="checkbox" name="" id={index} className={ss["eachCheckBox"]} onClick={checkSome}/></td>
               <td>{index+1}</td>
 
-              {dataType === "payment" ? (
+              {dataType === "payments" ? (
                 <>
                   <td>{testNames[index]}</td>
                   <td>contact number</td>
                   <td>{item.month}</td>
                   <td>{item.checkit.toString()}</td>
                   <td className={ss["action-buttons"]}>
-                    <button className={ss["view-btn"]} >
+                    {(!item.checkit) && (
+                      <button className={ss["view-btn"]} onClick={()=>stuPaid(item.payment_id)} 
+                    >
                       Paid
                     </button>
-                    <button className={ss["close-btn"]}>Close</button>
+                    )}
                   </td>
                 </>
               ) : (
