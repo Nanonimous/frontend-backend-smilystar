@@ -78,6 +78,11 @@
   .view-btn {
     background: #007bff;
     color: white;
+    border: none;
+    padding: 5px;
+    width: 5em;
+    border-radius: 5px;
+    cursor: pointer;
   }
   
 

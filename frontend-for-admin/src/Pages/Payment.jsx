@@ -1,4 +1,4 @@
-import React, { useEffect,useState  } from "react";
+import React, { use, useEffect,useState  } from "react";
 import Startcard from "../Components/Dashboard/Startcard/Startcard"
 import ps from "../Styles/payment.module.css";
 import Menu from "../Components/Layout/Sidebar/Menu";
@@ -7,100 +7,35 @@ import { useLocation } from "react-router-dom"; // Import useLocation
 import DateFilterComponent from "../Components/filter/Filter";
 import Table  from "../../src/Components/Table/Table";
 import axios from "axios";
+import { AiOutlineConsoleSql } from "react-icons/ai";
 
-const sampleDataPayment =  
-    [
-        {
-          "payment_id": 1,
-          "student_id": 1,
-          "payment_date": "2025-01-15",
-          "year": 2025,
-          "month": 1,
-          "checkit": false
-        },
-        {
-          "payment_id": 2,
-          "student_id": 2,
-          "payment_date": "2025-02-10",
-          "year": 2025,
-          "month": 2,
-          "checkit": false
-        },
-        {
-          "payment_id": 3,
-          "student_id": 3,
-          "payment_date": "2025-03-05",
-          "year": 2025,
-          "month": 3,
-          "checkit": false
-        },
-        {
-          "payment_id": 4,
-          "student_id": 4,
-          "payment_date": "2025-04-20",
-          "year": 2025,
-          "month": 4,
-          "checkit": false
-        }
-      ]
-      
-const sampleDataAttendance = [
-    {
-      "attendance_id": 1,
-      "student_id": 1,
-      "attendance_date": "2025-01-02",
-      "checkit": false,
-      "month": 1,
-      "year": 2025
-    },
-    {
-      "attendance_id": 2,
-      "student_id": 2,
-      "attendance_date": "2025-01-02",
-      "checkit": false,
-      "month": 1,
-      "year": 2025
-    },
-    {
-      "attendance_id": 3,
-      "student_id": 3,
-      "attendance_date": "2025-01-02",
-      "checkit": false,
-      "month": 1,
-      "year": 2025
-    },
-    {
-      "attendance_id": 4,
-      "student_id": 4,
-      "attendance_date": "2025-01-02",
-      "checkit": false,
-      "month": 1,
-      "year": 2025
-    }
-  ]
-  
-
-
-
-const attendancecardData = [
-    { title: "Total present", value: "30" },
-    { title: "Total absent", value: "5" },
-    {title : "total strength", value : "35"}
-];
-
-const paymentcardData = [
-  { title: "Fees Paid", value: "34" },
-  { title: "Fees Unpaid", value: "1" },
-
-];
 
 
 
 
 export default function Payment(){
   const [tableData, setTableData] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [filter, setFilter] = useState("all");
+  const [present ,setPresent] = useState();
+  const [paid ,setPaid] = useState();
+  const [total ,setTotal] = useState();
+
+
+
+      const attendancecardData = [
+          { title: "Total present", value:  present },
+          { title: "Total absent", value:  total - present },
+          {title : "total strength", value : total}
+      ];
+
+      const paymentcardData = [
+        { title: "Fees Paid", value:paid } ,
+        { title: "Fees Unpaid", value: total - paid },
+
+      ];
+      
     const location = useLocation(); // Get the current location
-    console.log("this is for testing",location.pathname.split("/"));
     const isPaymentPage = location.pathname.split("/").filter(Boolean).pop() === "payments";
     const cardsToShow = isPaymentPage ? paymentcardData : attendancecardData;
         ;
@@ -112,20 +47,40 @@ export default function Payment(){
               const pathParts = location.pathname.split("/").filter(Boolean);
               const program = pathParts[0];
               const database = pathParts[1];
-              console.log("hope this is woring ",program,  database)
-              const resultData = await axios.get(`/api/stu_enq/${program}/${database}`,
-                { withCredentials: true }
-              );
-              console.log("API is getting called:", resultData.data);
-              setTableData(resultData.data);
+              let fDate = selectedDate.toISOString().split('T')[0].split("-")
+              let filterYear = parseInt(fDate[0]);
+              let filterMonth = parseInt(fDate[1]);
+              let filterDate = parseInt(fDate[2]);
+              console.log(filterYear,filterMonth,filterDate);
+            if(database === "payments"){
+              const resultData = await axios.get(`http://localhost:5000/api/stu_enq/${program}/payments?pMonth=${filterMonth}&pYear=${filterYear}`);
+              const data = resultData.data;
+              console.log(data)
+              setTableData(data);
+              const paidCount = data.filter(item => item.checkit === true).length;
+              setPaid(paidCount);
+              setTotal(data.length);
+              console.log(paidCount, data.length);
+              } else if(database === "attendance"){
+              const resultData = await axios.get(`http://localhost:5000/api/stu_enq/${program}/attendance?aMonth=${filterMonth}&aYear=${filterYear}&aDate=${filterDate}`);
+              const data = resultData.data;
+              console.group(resultData.data)
+              setTableData(data);
+              const presentCount = data.filter(item => item.checkit === true).length;
+              setPresent(presentCount);
+              setTotal(data.length);
+              console.log(presentCount, data.length);
+              }
+
             } catch (err) {
               console.error("Error fetching data:", err);
             }
           };
         
-          fetchData();
-        }, [location.pathname]); // optional: include this to re-fetch if route changes
+          fetchData();  
+        }, [location.pathname,selectedDate]); // optional: include this to re-fetch if route changes
         
+
 
         return (
         <>
@@ -137,7 +92,14 @@ export default function Payment(){
               <Navbar />
                <div className={ps.body}>
 
-               <DateFilterComponent/>
+               <DateFilterComponent
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              filter={filter}
+              setFilter={setFilter}
+              dbs = {location.pathname.split("/").filter(Boolean)[1]}
+            />
+
             <div className={ps.Startcard}>
               
             {cardsToShow.map((item, index) => (
@@ -146,10 +108,8 @@ export default function Payment(){
 
             </div>
 
-
-
             </div>
-            <Table datas = {location.pathname.split("/").filter(Boolean).pop() == "payments" ? sampleDataPayment : sampleDataAttendance} dataType = {location.pathname.split("/").filter(Boolean).pop()}/>
+            <Table datas = {tableData} filterOp = {filter}  presentSet = {setPresent}  paidSet = {setPaid} progs = {location.pathname.split("/").filter(Boolean)[0]} dataType = {location.pathname.split("/").filter(Boolean).pop()}/>
 
 
 

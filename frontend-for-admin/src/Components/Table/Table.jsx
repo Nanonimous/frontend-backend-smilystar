@@ -1,171 +1,380 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import ss from "./Table.module.css";
 import axios from "axios";
 
+const Table = ({ datas,filterOp,presentSet,paidSet, progs, dataType }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [originalData, setOriginalData] = useState(datas); // keep original unfiltered data
+  const [dataList, setDataList] = useState(datas);
 
-const Table = ({ datas, dataType }) =>{
-    console.log("in the testing section " , datas, dataType);
+useEffect(() => {
+  setOriginalData(datas);
+}, [datas]);
 
-    const [searchTerm, setSearchTerm] = useState(""); // State for search input
-    const filteredData = datas?.filter((item) => {
-        const searchValue = searchTerm.toLowerCase();
-    
-        return (
-          item?.first_name?.toLowerCase().includes(searchValue) || // Search by first name
-          item?.last_name?.toLowerCase().includes(searchValue) || // Search by last name
-          item?.student_name?.toLowerCase().includes(searchValue) || // Search by student name
-          item?.phone_number?.includes(searchValue) || // Search by phone number
-          item?.mobile?.includes(searchValue) || // Search by mobile
-          item?.programs?.toLowerCase().includes(searchValue) || // Search by program
-          item?.father_name?.toLowerCase().includes(searchValue) || // Search by father name
-          item?.mother_name?.toLowerCase().includes(searchValue) // Search by mother name
-        );
-      });
-    
+useEffect(() => {
+  let filteredData = [];
 
-      const checkAll = () =>{
-        const chbtns = document.querySelectorAll(".eachCheckBox") ;
-        chbtns.forEach(element => {
-          element.checked = !element.checked;
-        });
-        const DoneBtn = document.getElementById("AllDone");
-        const NDoneBtn = document.getElementById("AllNDone"); 
-        DoneBtn.disabled = !DoneBtn.disabled;
-        if(NDoneBtn){
-          NDoneBtn.disabled = !NDoneBtn.disabled;
-        }
-      }
-        
-      const checkSome = () =>{
-        const chbtns = document.querySelectorAll(".eachCheckBox") ;
-        const DoneBtn = document.getElementById("AllDone");
-        const NDoneBtn = document.getElementById("AllNDone"); 
-        DoneBtn.disabled = !DoneBtn.disabled;
-        if(NDoneBtn){
-          NDoneBtn.disabled = !NDoneBtn.disabled;
-        }
-      }
-    
+  if (dataType === "payments") {
+    if (filterOp === "paid") {
+      filteredData = originalData.filter(item => item.checkit === true);
+    } else if (filterOp === "unpaid") {
+      filteredData = originalData.filter(item => item.checkit === false);
+    } else {
+      filteredData = originalData;
+    }
+  } else {
+    if (filterOp === "present") {
+      filteredData = originalData.filter(item => item.checkit === true);
+    } else if (filterOp === "absent") {
+      filteredData = originalData.filter(item => item.checkit === false);
+    } else {
+      filteredData = originalData;
+    }
+  }
 
-      const testNames = [
-        "nivaas",
-        "hirthick",
-        "jothimani",
-        "vijay"
-      ]
-    
-      const stuPaid = (stuId) => {
-        console.log("id coming uhh paid" , stuId);
+  setDataList(filteredData);
+  setSelectedItems([]);
+}, [filterOp, dataType, originalData]); // depend on originalData, filterOp, dataType
 
-      }
 
-      const stuClose = (stuId) => {
-        console.log("id coming uhh close" , stuId)
+// useEffect(() => {
+//   let filteredData = [];
 
-      }
+//   if (dataType === "payments") {
+//     if (filterOp === "paid") {
+//       filteredData = dataList.filter(item => item.checkit === true);
+//     } else if (filterOp === "unpaid") {
+//       filteredData = dataList.filter(item => item.checkit === false);
+//     } else {
+//       filteredData = dataList;
+//     }
+//   } else {
+//     if (filterOp === "present") {
+//       filteredData = dataList.filter(item => item.checkit === true);
+//     } else if (filterOp === "absent") {
+//       filteredData = dataList.filter(item => item.checkit === false);
+//     } else {
+//       filteredData = dataList;
+//     }
+//   }
+
+//   setDataList(filteredData);
+//   setSelectedItems([]);
+// }, [datas, filterOp, dataType,dataList]); // <== Make sure filterOp and dataType are here
+
+  const filteredData = dataList.filter((item) => {
+    const searchValue = searchTerm.toLowerCase();
     return (
-        <div className={ss["table-container"]}>
-        <div className={ss.options}>
-            <input
-                type="text"
-                placeholder={`Search ${dataType}...`}
-                className={ss["search-box"]}
-                value={searchTerm} // Controlled input
-                onChange={(e) => setSearchTerm(e.target.value)} // Update search term
-            />
+      item?.first_name?.toLowerCase().includes(searchValue) ||
+      item?.last_name?.toLowerCase().includes(searchValue) ||
+      item?.student_name?.toLowerCase().includes(searchValue) ||
+      item?.phone_number?.includes(searchValue) ||
+      item?.mobile?.includes(searchValue) ||
+      item?.programs?.toLowerCase().includes(searchValue) ||
+      item?.father_name?.toLowerCase().includes(searchValue) ||
+      item?.mother_name?.toLowerCase().includes(searchValue)
+    );
+  });
 
-            <div className={ss.multiAss}>
+  const toggleSelectAll = () => {
+    if (selectedItems.length === filteredData.length) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems(filteredData.map(item => item.attendance_id || item.payment_id));
+    }
+  };
+
+  const toggleItem = (id) => {
+    setSelectedItems(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const stuPresent = async (attId) => {
+    try {
+      await axios.patch(`http://localhost:5000/api/stu_enq/${progs}/attendance`, {
+        checkit: true,
+        id: attId,
+      });
+
+      setDataList(prev =>
+        prev.map(item =>
+          item.attendance_id === attId ? { ...item, checkit: true } : item
+        )
+      );
+      setOriginalData(prev =>
+      prev.map(item =>
+        item.attendance_id === attId ? { ...item, checkit: true } : item
+      )
+    );
+      presentSet(prev => prev + 1)
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const stuAbsent = async (attId) => {
+    try {
+      await axios.patch(`http://localhost:5000/api/stu_enq/${progs}/attendance`, {
+        checkit: false,
+        id: attId,
+      });
+
+      setDataList(prev =>
+        prev.map(item =>
+          item.attendance_id === attId ? { ...item, checkit: false } : item
+        )
+      );
+
+      setOriginalData(prev =>
+      prev.map(item =>
+        item.attendance_id === attId ? { ...item, checkit: false } : item
+      )
+    );
+      presentSet(prev => prev - 1)
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const stuPaid = async (payId) => {
+    const userConfirmed = window.confirm("Are you sure you want to delete this item?");
+    if(userConfirmed){
+    try {
+          await axios.patch(`http://localhost:5000/api/stu_enq/${progs}/payments`, {
+            checkit: true,
+            id: payId,
+          });
+
+          setDataList(prev =>
+            prev.map(item =>
+              item.payment_id === payId ? { ...item, checkit: true } : item
+            )
+          );
+
+        setOriginalData(prev =>
+            prev.map(item =>
+              item.payment_id === payId ? { ...item, checkit: true } : item
+            )
+          );
+          paidSet(prev => prev + 1)
+        } catch (err) {
+          console.error(err);
+        }
+    }
+    // Implement your Paid logic here
+    
+  };
+
+  const stuPresentMulti = async (attId) => {
+    const userConfirmed = window.confirm("Are you sure you want to make eveyone present?")
+    if(userConfirmed){
+      let c = dataList.filter(item => attId.includes(item.attendance_id) && item.checkit == false);
+      let filterId = c.map( t => t.attendance_id);
+      try {
+        await axios.patch(`http://localhost:5000/api/stu_enq/multi/${progs}/attendance`, {
+          checkit: Array(c.length).fill(true),
+          id: filterId,
+        });
+  
+        setDataList(prev =>
+          prev.map(item =>
+            attId.includes(item.attendance_id) ? { ...item, checkit: true } : item
+          )
+        );
+
+        setOriginalData(prev =>
+      prev.map(item =>
+        attId.includes(item.attendance_id) ? { ...item, checkit: true } : item
+      )
+    );
+        presentSet(prev => prev + c.length)
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    
+  } 
+  const stuAbsentMulti = async (attId) => {
+    const userConfirmed = window.confirm("Are you sure you want to make eveyone absent?")
+    if(userConfirmed){
+      let c = dataList.filter(item => attId.includes(item.attendance_id) && item.checkit == true);
+      let filterId = c.map( t => t.attendance_id);
+      try {
+      await axios.patch(`http://localhost:5000/api/stu_enq/multi/${progs}/attendance`, {
+        checkit: Array(c.length).fill(false),
+        id: filterId,
+      });
+
+      setDataList(prev =>
+        prev.map(item =>
+          attId.includes(item.attendance_id) ? { ...item, checkit: false } : item
+        )
+      );
+      
+      setOriginalData(prev =>
+      prev.map(item =>
+        attId.includes(item.attendance_id) ? { ...item, checkit: false } : item
+      )
+    );  
+       presentSet(prev => prev - c.length)
+    } catch (err) {
+      console.error(err);
+    }
+    }
+        
+  } 
+    const stuPaidMulti = async (payId) => {
+        const userConfirmed = window.confirm("Are you sure you want to make eveyone paid?")
+    if(userConfirmed){
+      try {
+      await axios.patch(`http://localhost:5000/api/stu_enq/multi/${progs}/payments`, {
+        checkit: Array(payId.length).fill(true),
+        id: payId,
+      });
+
+      setDataList(prev =>
+        prev.map(item =>
+          payId.includes(item.payment_id) ? { ...item, checkit: true } : item
+        )
+      );
+
+        setOriginalData(prev =>
+      prev.map(item =>
+        payId.includes(item.payment_id) ? { ...item, checkit: true } : item
+      )
+    );
+       paidSet(prev => prev + payId.length)
+    } catch (err) {
+      console.error(err);
+    }
+    }
+  } 
+
+
+  const allSelected = selectedItems.length === filteredData.length && filteredData.length > 0;
+
+  return (
+    <div className={ss["table-container"]}>
+      <div className={ss.options}>
+        <input
+          type="text"
+          placeholder={`Search ${dataType}...`}
+          className={ss["search-box"]}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+          <div className={ss.multiAss}>
             <input
+              type="submit"
+              value={dataType === "payments" ? "✅ Paid" : "✅ Mark Present"}
+              className={ss.MarkPr}
+              disabled={selectedItems.length === 0}
+              id="AllDone"
+              onClick={() => {
+                dataType === "attendance" ? stuPresentMulti(selectedItems) : stuPaidMulti(selectedItems);
+              }}
+            />
+            {dataType === "attendance" && (
+              <input
                 type="submit"
-                value={dataType === "payments"?"✅ Paid" :"✅ Mark Present" }
-                name="MarkPr"
-                className={ss.MarkPr}
-                disabled
-                id="AllDone"
-                />
-            {dataType === "attendance" && <input
-                            type="submit"
-                            value= "❌ Mark Absent"
-                            name="MarkAb"
-                            className={ss.MarkAb}
-                            disabled
-                            id="AllNDone"
-                            />
-                }
-                
-            </div>
-        </div>
-        <table className={ss["enquiry-table"]}>
+                value="❌ Mark Absent"
+                className={ss.MarkAb}
+                disabled={selectedItems.length === 0}
+                id="AllNDone"
+                onClick={() =>
+                stuAbsentMulti(selectedItems)
+              }
+              />
+            )}
+          </div>
+      </div>
+
+      <table className={ss["enquiry-table"]}>
         <thead>
           <tr>
-            <th >
-              <input type="checkbox" name="" id=""  className={ss["selectAll"]} onClick={checkAll}/>
+            <th>
+              <input type="checkbox" checked={allSelected} onChange={toggleSelectAll} />
             </th>
             <th>ID</th>
             <th>Name</th>
             <th>Contact</th>
             {dataType === "payments" ? (
               <>
-                <th>price</th>
-                <th>status</th>
+                <th>Month</th>
+                <th>Status</th>
               </>
             ) : (
               <>
-                <th>date</th>
-                <th>status</th>
+                <th>Date</th>
+                <th>Status</th>
               </>
             )}
           </tr>
         </thead>
         <tbody>
-          {datas?.map((item, index) => (
-            <tr key={index}>
-              <td><input type="checkbox" name="" id={index} className={ss["eachCheckBox"]} onClick={checkSome}/></td>
-              <td>{index+1}</td>
+          {filteredData.map((item, index) => {
+            const itemId = item.attendance_id || item.payment_id;
+            return (
+              <tr key={itemId}>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={selectedItems.includes(itemId)}
+                    onChange={() => toggleItem(itemId)}
+                    disabled = {item.checkit == true && dataType == "payments"}
+                  />
+                </td>
+                <td>{index + 1}</td>
+                <td>{item.student_name}</td>
+                <td>{item.phone_number}</td>
+                {dataType === "payments" ? (
+                  <>
+                    <td>{item.month}</td>
+                    <td>{item.checkit.toString()}</td>
+                    <td>
+                      {!item.checkit && (
+                        <button
+                          className={ss["view-btn"]}
+                          onClick={() => stuPaid(item.payment_id)}
+                        >
+                          Paid
+                        </button>
+                      )}
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td>{item.attendance_date?.split("T")[0]}</td>
+                    <td>{item.checkit.toString()}</td>
+                    <td>
+                      <button
+                        className={ss["present-btn"]}
+                        disabled={item.checkit === true}
+                        onClick={() => stuPresent(item.attendance_id)}
+                      >
+                        ✅ Present 
+                      </button> 
 
-              {dataType === "payments" ? (
-                <>
-                  <td>{testNames[index]}</td>
-                  <td>contact number</td>
-                  <td>{item.month}</td>
-                  <td>{item.checkit.toString()}</td>
-                  <td className={ss["action-buttons"]}>
-                    {(!item.checkit) && (
-                      <button className={ss["view-btn"]} onClick={()=>stuPaid(item.payment_id)} 
-                    >
-                      Paid
-                    </button>
-                    )}
-                  </td>
-                </>
-              ) : (
-                <>
-                  <td>{testNames[index]}</td>
-                  <td>contact number</td>
-                  <td>{item.attendance_date}</td>
-                  <td>{item.checkit.toString()}</td>
-                  <td className={ss["action-buttons"]}>
-                    <button className={ss["present-btn"]}
-                    disabled={item.checkit === true} >
-                    ✅ Present
-                    </button>
-                    <button
-                      className={ss["absent-btn"]}
-                      disabled={item.checkit === false}
-                    >
-                      ❌ Absent
-                    </button>
-
-                  </td>
-                </>
-              )}
-            </tr>
-          ))}
+                      <button
+                        className={ss["absent-btn"]}
+                        disabled={item.checkit === false}
+                        onClick={() => stuAbsent(item.attendance_id)}
+                      >
+                        ❌ Absent
+                      </button>
+                    </td>
+                  </>
+                )}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
-
-            </div>
-    )
-}
+    </div>
+  );
+};
 
 export default Table;

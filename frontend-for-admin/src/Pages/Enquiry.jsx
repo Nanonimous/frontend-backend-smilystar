@@ -31,7 +31,7 @@ export default function Enquiry(){
   const location = useLocation(); // Get the current location
   const [searchParams] = useSearchParams(); // Get URL parameters
 
-  const program = searchParams.get("program") || "dayCare";
+  const program = searchParams.get("program") || "daycare";
 
   // Check if the current page is 'enquiry' or 'student' based on the URL
   const isEnquiryPage = location.pathname.toLowerCase().endsWith("/enquiry");
@@ -64,18 +64,12 @@ export default function Enquiry(){
          </div>
          <div className={ec.rightside} >
               <Navbar />
-               <div className={ec.body}>
-
-               
+               <div className={ec.body}>  
             <div className={ec.Startcard}>
-              
             {cardsToShow.map((item, index) => (
                 <Startcard key={index} title={item.title} value={item.value} />
             ))}
-
             </div>
-
-         
 
             <EnquiryTable datas={data } dataType={tablename} />
 

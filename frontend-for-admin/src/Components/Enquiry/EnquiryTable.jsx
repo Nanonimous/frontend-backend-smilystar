@@ -23,6 +23,7 @@ const EnquiryTable = ({ datas, dataType }) => {
 
   const handleMarkContacted = (id) => {
     console.log(`Marking enquiry with ID ${id} as contacted`);
+    filteredData.filter(t => t.sno == id)[0].checkit = "contacted"
   };
 
   // Filter data based on search input
@@ -97,9 +98,9 @@ const EnquiryTable = ({ datas, dataType }) => {
                     <button className={es["view-btn"]} onClick={() => handleViewClick(item)}>
                       View
                     </button>
-                    {item.checkit === "New" && (
+                    {item.checkit === "new" && (
                       <button
-                        onClick={() => handleMarkContacted(item.id)}
+                        onClick={() => handleMarkContacted(item.sno)}
                         className={es["contact-btn"]}
                       >
                         Mark Contacted
