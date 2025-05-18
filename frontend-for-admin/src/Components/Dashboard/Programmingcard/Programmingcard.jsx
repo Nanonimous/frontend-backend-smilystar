@@ -2,10 +2,9 @@ import pc from './Programmingcard.module.css';
 import React from "react";
 import { FaArrowRight } from "react-icons/fa";
 
-export default function ProgramCard({ title, icon, value, description, attendance, payment, color }) {
+export default function ProgramCard({ title, icon, value, description, attendance, payment, color,path }) {
   return (
     <>
-
     <div className={`${pc.card} ${pc[color]}`}>
             <div className={pc.top}>
             <div className={pc.progresstop} style={{ width: `95%` }}></div>
@@ -42,9 +41,12 @@ export default function ProgramCard({ title, icon, value, description, attendanc
         </div>
       </div>
 
-      <button className={pc.viewButton}>
-        View Students <FaArrowRight />
-      </button>
+      <a href={path}>
+  <button className={pc.viewButton}>
+    View Students <FaArrowRight />
+  </button>
+</a>
+
 
 
     </div>

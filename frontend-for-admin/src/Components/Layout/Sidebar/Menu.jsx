@@ -1,10 +1,11 @@
 import React, { useState ,useEffect} from "react";
 import ms from './Menu.module.css';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 
 export default function Menu() {
+    const { program } = useParams();
     const navigate = useNavigate();
     const [dashboard, setDashboard] = useState(true);
 
@@ -38,9 +39,9 @@ export default function Menu() {
                         <li onClick={() => handleNavigation("/")}>Dashboard</li>
                             {dashboard && (
                                 <>
-                                    <li>Students List</li>
-                                    <li>Attendances</li>
-                                    <li>Payments</li>
+                <li onClick={() => navigate(`/${program}/students`)}>Students List</li>
+                <li onClick={() => navigate(`/${program}/attendance`)}>Attendances</li>
+                <li onClick={() => navigate(`/${program}/payments`)}>Payments</li>
                                 </>
                             )}
                             <li></li>

@@ -1,6 +1,6 @@
 // data/programsData.js
 import { FaDrum, FaLanguage, FaBaby, FaMusic } from "react-icons/fa";
-
+const p="http://localhost:3000/";
 const programsData = [
   {
     title: "Bharatanatyam",
@@ -10,6 +10,7 @@ const programsData = [
     attendance: 83.6,
     payment: 68,
     color: "red",
+    path:`${p}Bharatanatyam/students`,
   },
   {
     title: "Hindi",
@@ -19,6 +20,7 @@ const programsData = [
     attendance: 76.6,
     payment: 67,
     color: "blue",
+     path:`${p}Hindi/students`,
   },
   {
     title: "Daycare",
@@ -28,6 +30,7 @@ const programsData = [
     attendance: 80.9,
     payment: 70,
     color: "green",
+    path:`${p}Daycare/students`,
   },
   {
     title: "Carnatic",
@@ -37,7 +40,40 @@ const programsData = [
     attendance: 79.4,
     payment: 68,
     color: "purple",
+    path:`${p}Carnatic/students`,
   },
+  {
+    title: "violin",
+    icon: <FaDrum />,
+    value: 17,
+    description: "Classical Indian dance form from Tamil Nadu",
+    attendance: 83.6,
+    payment: 68,
+    color: "red",
+    path:`${p}violin/students`,
+  },
+  {
+    title: "mridangam & tabla",
+    icon: <FaDrum />,
+    value: 17,
+    description: "Classical Indian dance form from Tamil Nadu",
+    attendance: 83.6,
+    payment: 68,
+    color: "red",
+    path:`${p}tabla/students`,
+  },
+  {
+    title: "piano",
+    icon: <FaDrum />,
+    value: 17,
+    description: "Classical Indian dance form from Tamil Nadu",
+    attendance: 83.6,
+    payment: 68,
+    color: "red",
+    path:`${p}piano/students`,
+  },
+
+
 ];
 
 export default programsData;

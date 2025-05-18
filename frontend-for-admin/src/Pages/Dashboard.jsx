@@ -54,6 +54,7 @@ export default function Dashboard() {
                                 attendance={program.attendance}
                                 payment={program.payment}
                                 color={program.color}
+                                path={program.path}
                                 />
                             ))}
                 </div>
