@@ -3,7 +3,7 @@ import EnrollPopup from "./EnrollPopup";
 import es from "./EnquiryTable.module.css";
 import axios from "axios";
 
-const EnquiryTable = ({ datas,totalEnset,newEnset,closeEnset,contactedEnset,enrolledEnset,totalStudset, dataType ,progs}) => {
+const EnquiryTable = ({ datas,newEnset,closeEnset,contactedEnset,enrolledEnset,totalStudset, dataType ,progs}) => {
   console.log(progs)
   const [enquiryData, setEnquiryData] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -68,21 +68,33 @@ const EnquiryTable = ({ datas,totalEnset,newEnset,closeEnset,contactedEnset,enro
     }
   };
 
-  const handleEnrollStatusChange = (id) => {
+  const handleEnrollStatusChange = async (id) => {
+    try{
+          const res = await axios.patch(`http://localhost:5000/api/stu_enq/daycare/enquiry`,{
+          "checkit": "enrolled",
+          "id" : id
+        })
+    setEnquiryData((prevData) => {
+  const updatedData = prevData.map((item) =>
+    item.sno === id ? { ...item, checkit: "enrolled" } : item
+  );
 
-    setEnquiryData((prevData) =>
-      prevData.map((item) =>
-        item.sno === id ? { ...item, checkit: "enrolled" } : item
-      )
-    );
+  // Now count from updated data
+  let a = updatedData.filter(tn => tn.checkit === "new");
+  let b = updatedData.filter(tn => tn.checkit === "contacted");
+  let c = updatedData.filter(tn => tn.checkit === "enrolled");
 
-          let a = enquiryData.filter(tn => tn.checkit == "new");        
-      let b = enquiryData.filter(tn => tn.checkit == "contacted");        
-      let c = enquiryData.filter(tn => tn.checkit == "enrolled");     
-      newEnset(a.length)
-    contactedEnset(b.length)
-    enrolledEnset(c.length);
-    setIsPopupOpen(false);
+  newEnset(a.length);
+  contactedEnset(b.length);
+  enrolledEnset(c.length);
+
+  return updatedData;
+});
+  
+    }catch(err){
+      console.log(err);
+    }
+
   };
 
   const handleAddStatusChange = (fd) =>{
@@ -124,7 +136,7 @@ const EnquiryTable = ({ datas,totalEnset,newEnset,closeEnset,contactedEnset,enro
     if(c){
       try{
         console.log(stuid)
-        const respo = await axios.delete(`http://localhost:5000/api/stu_enq/daycare/students?id=${stuid}`)
+        const respo = await axios.delete(`http://localhost:5000/api/stu_enq/${progs}/students?id=${stuid}`)
       setEnquiryData((prevData) =>
       prevData.filter((item) =>
         item.student_id != stuid

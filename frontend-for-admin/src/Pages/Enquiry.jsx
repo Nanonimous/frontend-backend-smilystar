@@ -25,7 +25,7 @@ export default function Enquiry(){
   const [enrolledEn, setEnrolledEn] = useState(0);
   const [totalStud, setTotalStud] = useState(0);
 
-  const program = searchParams.get("program") || "daycare";
+
 
         const enquirycardData = [
           { title: "Total Enquiries", value: totalEn },
@@ -45,7 +45,10 @@ export default function Enquiry(){
   const cardsToShow = isEnquiryPage ? enquirycardData : studentscardData;
 
   const tablename= isEnquiryPage ? "enquiry" : "students";
-
+  
+            const pathParts = location.pathname.split("/").filter(Boolean);
+          
+            let program = tablename ==  "enquiry" ? "daycare" :  pathParts[0]
     useEffect(() => {
         const fetchData = async () => {
           try {
@@ -74,7 +77,7 @@ export default function Enquiry(){
         };
     
         fetchData();
-      }, [closeEn,newEn,contactedEn,enrolledEn,totalStud,totalEn]); 
+      }, [closeEn,newEn,contactedEn,enrolledEn,totalStud,totalEn,program]); 
 
     return(
 <>

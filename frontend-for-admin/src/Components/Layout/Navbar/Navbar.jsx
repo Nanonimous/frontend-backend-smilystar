@@ -11,7 +11,7 @@ export default function Navbar() {
         setShowDropdown(prev => !prev);
     };
     const handleProgramClick = (program) => {
-        const basePath = '/'; // 👈 You can change this if needed
+        const basePath = '/'; // You can change this if needed
         const path = `${basePath}${program}/students`;
         navigate(path);
         setShowDropdown(false); // Close dropdown after navigation
@@ -32,7 +32,7 @@ export default function Navbar() {
                             All Programs
                         </button>
                         <ul className={`${ns.dropdownContent} ${showDropdown ? ns.show : ''}`}>
-                        {["Bharatanatyam", "Hindi", "Daycare", "Carnatic", "Violin", "Mridangam", "Piano"].map((program, index) => (
+                        {["bharatanatyam", "hindiclass", "daycare", "carnatic", "violin", "tabla", "piano"].map((program, index) => (
                             <li key={index} onClick={() => handleProgramClick(program)}>
                                 {program}
                             </li>

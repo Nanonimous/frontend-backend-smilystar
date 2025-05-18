@@ -16,7 +16,7 @@ export default function Menu() {
         window.location.reload(); 
         
       };
-
+    console.log("printing it ",program)
   useEffect(() => {
   if (window.location.href === "http://localhost:3000/" || window.location.href === "http://localhost:3000/enquiry") {
     console.log("it is dashboard");

@@ -38,8 +38,14 @@ const EnrollPopup = ({ isOpen, onClose, enquiry,mode ,onEnrollSuccess ,onStudent
       console.log(formData)
     try {
       const res = await axios.post(`http://localhost:5000/api/stu_enq/${program}/students`,formData)
-      const result = await res.data;
-      console.log(result);
+      const result = res.data;
+      console.log("student added successfully" , result);
+      // const res2 = await axios.get(`http://localhost:5000/api/stu_enq/${program}/students`)
+      // const result2 = res2.data.student_id;
+      // const res2 = await axios.post(`http://localhost:5000/api/stu_enq/${program}/attendance`,{
+      //   "id": 
+      // })
+
       onClose()
       {mode == "addstudent" ? onStudentSuccess(formData) : onEnrollSuccess() }
       
