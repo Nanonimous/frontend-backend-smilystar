@@ -5,6 +5,18 @@
     background: #f9f9f9;
   }
   
+.filter-container{
+  display: flex;
+  gap: 20px;
+}
+
+.add-stu-btn{
+  width: 15em;
+  border-radius: 10px;
+    background-color: green;
+    cursor: pointer;
+}
+
   /* Search Box */
   .search-box {
     width: 90%;
@@ -89,3 +101,13 @@
     color: white;
   }
   
+  .table-row{
+    color: black;
+  }
+  .table-row-close{
+    color: grey;
+  }
+  .del-stu-btn{
+    background-color:rgba(255, 0, 0, 0.753);
+    color: black;
+  }

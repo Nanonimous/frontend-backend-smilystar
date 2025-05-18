@@ -10,29 +10,35 @@ import Navbar from "../Components/Layout/Navbar/Navbar";
 import EnquiryTable from "../Components/Enquiry/EnquiryTable";
 
 
-  const enquirycardData = [
-    { title: "Total Enquiries", value: "500" },
-    { title: "New", value: "200" },
-    { title: "Contacted", value: "200" },
-    { title: "Enrolled", value: "250" },
-    { title: "Closed", value: "50" }
-];
 
-const studentscardData = [
-  { title: "Total Enquiries", value: "500" },
-  { title: "Active Students", value: "200" },
-  { title: "Inactive Students", value: "200" },
-  { title: "Average Age", value: "250" },
 
-];
+
 
 export default function Enquiry(){
   const [data, setData] = useState([]);
-  const location = useLocation(); // Get the current location
-  const [searchParams] = useSearchParams(); // Get URL parameters
+  const location = useLocation(); 
+  const [searchParams] = useSearchParams(); 
+  const [totalEn, setTotalEn] = useState(0);
+  const [closeEn, setCloseEn] = useState(0);
+  const [newEn, setNewEn] = useState(0);
+  const [contactedEn, setContactedEn] = useState(0);
+  const [enrolledEn, setEnrolledEn] = useState(0);
+  const [totalStud, setTotalStud] = useState(0);
 
   const program = searchParams.get("program") || "daycare";
 
+        const enquirycardData = [
+          { title: "Total Enquiries", value: totalEn },
+          { title: "New", value:  newEn },
+          { title: "Contacted", value: contactedEn },
+          { title: "Enrolled", value: enrolledEn },
+          { title: "Closed", value: closeEn}
+      ];
+
+
+      const studentscardData = [
+        { title: "Total students", value: totalStud }
+      ];
   // Check if the current page is 'enquiry' or 'student' based on the URL
   const isEnquiryPage = location.pathname.toLowerCase().endsWith("/enquiry");
 
@@ -47,6 +53,20 @@ export default function Enquiry(){
             
             const response = await axios.get(`http://localhost:5000/api/stu_enq/${program}/${tablename}`); // Replace with your API endpoint
             console.log("API Response:", response.data); 
+              if (tablename === "enquiry") {
+                    
+          let a = response.data.filter(tn => tn.checkit == "new");        
+          let b = response.data.filter(tn => tn.checkit == "contacted");        
+          let c = response.data.filter(tn => tn.checkit == "enrolled"); 
+          let d = response.data.filter(tn => tn.checkit == "closed"); 
+                setTotalEn(response.data.length);
+                setCloseEn(d.length)
+                setNewEn(a.length)
+                setEnrolledEn(c.length)
+                setContactedEn(b.length)
+              } else {
+                setTotalStud(response.data.length);
+              }
             setData(response.data);   
           } catch (error) {
             console.error("Error fetching data:", error);
@@ -54,7 +74,7 @@ export default function Enquiry(){
         };
     
         fetchData();
-      }, []); 
+      }, [closeEn,newEn,contactedEn,enrolledEn,totalStud,totalEn]); 
 
     return(
 <>
@@ -71,7 +91,7 @@ export default function Enquiry(){
             ))}
             </div>
 
-            <EnquiryTable datas={data } dataType={tablename} />
+            <EnquiryTable datas={data} totalEnset = {setTotalEn}  newEnset = {setNewEn} closeEnset = {setCloseEn} contactedEnset = {setContactedEn} enrolledEnset = {setEnrolledEn} totalStudset = {setTotalStud} dataType={tablename} progs = {program}/>
 
             </div>
 
