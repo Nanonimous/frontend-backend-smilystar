@@ -216,7 +216,7 @@ const EnquiryTable = ({ datas,newEnset,closeEnset,contactedEnset,enrolledEnset,t
             <tr key={index} className={item.checkit == "closed" ? es["table-row-close"] : es["table-row"]}>
               {dataType === "enquiry" ? (
                 <>
-                <td>{item.sno}</td>
+                <td>{index+1}</td>
                   <td>{item.first_name + " " + item.last_name}</td>
                   <td>{item.mobile}</td>
                   <td>{item.programs}</td>
@@ -294,6 +294,7 @@ const EnquiryTable = ({ datas,newEnset,closeEnset,contactedEnset,enrolledEnset,t
       {/* Enroll Popup */}
       {isPopupOpen && (
         <EnrollPopup
+          prog = {selectedItem.programs}
           isOpen={isPopupOpen}
           onClose={() => setIsPopupOpen(false)}
           enquiry={selectedItem}

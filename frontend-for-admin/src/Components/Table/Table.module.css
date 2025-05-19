@@ -17,6 +17,17 @@
     gap: 1rem;
   }
 
+.viewbtnabs{
+  background: rgb(128, 128, 128);
+  color: white;
+  border: none;
+  padding: 5px;
+  width: 5em;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
   .multiAss input{
     cursor: pointer;
   }
@@ -83,6 +94,7 @@
     width: 5em;
     border-radius: 5px;
     cursor: pointer;
+    margin-left: 5px;
   }
   
 

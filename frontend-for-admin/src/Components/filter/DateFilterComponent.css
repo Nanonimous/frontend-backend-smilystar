@@ -26,6 +26,25 @@
     cursor: pointer;
     font-size: 16px;
   }
+
+  .nav-button-class{
+    padding: 8px 12px;
+    border: 1px solid black;
+    border-radius: 4px;
+    background: #00a6ff;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all .2s ease;
+  }
+
+  .nav-button-class:hover{
+    background:#00a6ff7a
+  }
+
+  .left-side{
+    display: flex;
+    gap: 10px;
+  }
   
   .nav-button:hover {
     background: #f0f0f0;
@@ -39,7 +58,7 @@
   }
   
   .filter-dropdown {
-    padding: 8px;
+    padding: 8px 12px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;

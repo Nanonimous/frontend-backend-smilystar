@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import style from '../Styles/Dashboard.module.css';
 import Navbar from "../Components/Layout/Navbar/Navbar";
 import Startcard from '../Components/Dashboard/Startcard/Startcard';
@@ -7,10 +7,46 @@ import Quickaction from "../Components/Dashboard/Quickaction/Quickaction";
 import cardsData from "../data/StartcardsData";
 import programsData from "../data/programcardData";
 import Menu from "../Components/Layout/Sidebar/Menu";
-
+import axios from "axios"
 export default function Dashboard() {   
     
     const [isMenuOpen, setIsMenuOpen] = useState(false); // Track menu state
+    const [notis, setNotis] = useState();
+    const [stuCount,setStuCount] = useState([]);
+
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            console.log("fetch from the enquiry");
+      
+            const response = await axios.get(`http://localhost:5000/api/stu_enq/daycare/enquiry`);
+            console.log("API Response:", response.data);
+      
+            const not = response.data.filter(tn => tn.checkit === "new");
+            setNotis(not.length);
+      
+            const progs = ["bharatanatyam", "hindiclass", "daycare", "carnatic", "violin", "tabla", "piano"];
+            
+            const studentCounts = await Promise.all(
+              progs.map(async (program) => {
+                const res = await axios.get(`http://localhost:5000/api/stu_enq/${program}/students`);
+                return res.data.length;
+              })
+            );
+      
+            setStuCount(studentCounts);
+      
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
+        };
+      
+        fetchData();
+      }, []);
+      
+    console.log(stuCount)
 
     return (
         <>
@@ -19,7 +55,7 @@ export default function Dashboard() {
         <Menu />
          </div>
          <div className={style.rightside} >
-            <Navbar />
+            <Navbar notCounter = {notis}/>
                
             <div className={style.body}>
                 <div className={style.container}>
@@ -44,8 +80,8 @@ export default function Dashboard() {
                     <h1>Program Overview</h1>
                     <div className={style.programs}>
                   
-                            {programsData.map((program, index) => (
-                                <ProgramCard
+                    {programsData.map((program, index) => (
+                            <ProgramCard
                                 key={index}
                                 title={program.title}
                                 icon={program.icon}
@@ -55,8 +91,11 @@ export default function Dashboard() {
                                 payment={program.payment}
                                 color={program.color}
                                 path={program.path}
-                                />
+                                count={stuCount}
+                                dataKey={index} // pass the index instead of using reserved 'key'
+                            />
                             ))}
+
                 </div>
                     <h2>Quick Actions</h2>
                         <Quickaction />
@@ -69,3 +108,4 @@ export default function Dashboard() {
         </>
     );
 }
+

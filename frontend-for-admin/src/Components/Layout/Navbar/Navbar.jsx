@@ -3,7 +3,7 @@ import ns from './Navbar.module.css';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function Navbar() {
+export default function Navbar({notCounter}) {
     const navigate = useNavigate(); 
     const [showDropdown, setShowDropdown] = useState(false);
 
@@ -47,7 +47,7 @@ export default function Navbar() {
                             alt="notification icon" 
                             className={ns.icon}
                         />
-                        <span className={ns.badge}>4</span>
+                        <span className={ns.badge}>{notCounter}</span>
                     </div>
                     <div className={ns.profile}>
 

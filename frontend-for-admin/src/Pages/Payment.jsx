@@ -9,10 +9,6 @@ import Table  from "../../src/Components/Table/Table";
 import axios from "axios";
 import { AiOutlineConsoleSql } from "react-icons/ai";
 
-
-
-
-
 export default function Payment(){
   const [tableData, setTableData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -20,6 +16,8 @@ export default function Payment(){
   const [present ,setPresent] = useState();
   const [paid ,setPaid] = useState();
   const [total ,setTotal] = useState();
+  const [classDay , setClassDay] = useState(false);
+  const [disclassDay,setDisClassDay] = useState(false)
 
 
 
@@ -97,6 +95,9 @@ export default function Payment(){
               setSelectedDate={setSelectedDate}
               filter={filter}
               setFilter={setFilter}
+              setclassDay = {setClassDay}
+              setDisclassDay = {setDisClassDay}
+              disClassDay = {disclassDay}
               dbs = {location.pathname.split("/").filter(Boolean)[1]}
             />
 

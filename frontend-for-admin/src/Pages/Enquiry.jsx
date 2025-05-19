@@ -77,7 +77,7 @@ export default function Enquiry(){
         };
     
         fetchData();
-      }, [closeEn,newEn,contactedEn,enrolledEn,totalStud,totalEn,program]); 
+      }, [closeEn,newEn,contactedEn,enrolledEn,totalStud,totalEn,program,tablename]); 
 
     return(
 <>
@@ -86,7 +86,7 @@ export default function Enquiry(){
         <Menu />
          </div>
          <div className={ec.rightside} >
-              <Navbar />
+              <Navbar notCounter={newEn}/>
                <div className={ec.body}>  
             <div className={ec.Startcard}>
             {cardsToShow.map((item, index) => (

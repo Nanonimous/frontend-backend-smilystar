@@ -1,6 +1,6 @@
 import "./DateFilterComponent.css";
 
-const DateFilterComponent = ({ selectedDate, setSelectedDate, filter, setFilter, dbs }) => {
+const DateFilterComponent = ({ selectedDate, setSelectedDate, filter, setFilter,setclassDay,setDisclassDay,disClassDay, dbs }) => {
   const navigateDate = (direction) => {
     setSelectedDate((prevDate) => {
       const newDate = new Date(prevDate);
@@ -44,6 +44,13 @@ const DateFilterComponent = ({ selectedDate, setSelectedDate, filter, setFilter,
 
         <button onClick={() => navigateDate("next")} className="nav-button">▶</button>
       </div>
+      <div className="left-side">
+      {dbs == "attendance" && !disClassDay ? (
+            <button className="nav-button-class" onClick={()=>{
+              setclassDay(true)
+              setDisclassDay(true)}}>Class Day</button>
+          ):""}
+
 
       {dbs == "payments" ? (
       <select value={filter} onChange={(e) => setFilter(e.target.value)} className="filter-dropdown">
@@ -59,6 +66,8 @@ const DateFilterComponent = ({ selectedDate, setSelectedDate, filter, setFilter,
         <option value="absent">Absent Only</option>
       </select>
       )}
+      </div>
+          
     </div>
   );
 };

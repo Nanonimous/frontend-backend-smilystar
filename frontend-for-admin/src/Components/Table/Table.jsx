@@ -8,6 +8,7 @@ const Table = ({ datas,filterOp,presentSet,paidSet, progs, dataType }) => {
   const [originalData, setOriginalData] = useState(datas); // keep original unfiltered data
   const [dataList, setDataList] = useState(datas);
 
+
 useEffect(() => {
   setOriginalData(datas);
 }, [datas]);
@@ -38,30 +39,6 @@ useEffect(() => {
 }, [filterOp, dataType, originalData]); // depend on originalData, filterOp, dataType
 
 
-// useEffect(() => {
-//   let filteredData = [];
-
-//   if (dataType === "payments") {
-//     if (filterOp === "paid") {
-//       filteredData = dataList.filter(item => item.checkit === true);
-//     } else if (filterOp === "unpaid") {
-//       filteredData = dataList.filter(item => item.checkit === false);
-//     } else {
-//       filteredData = dataList;
-//     }
-//   } else {
-//     if (filterOp === "present") {
-//       filteredData = dataList.filter(item => item.checkit === true);
-//     } else if (filterOp === "absent") {
-//       filteredData = dataList.filter(item => item.checkit === false);
-//     } else {
-//       filteredData = dataList;
-//     }
-//   }
-
-//   setDataList(filteredData);
-//   setSelectedItems([]);
-// }, [datas, filterOp, dataType,dataList]); // <== Make sure filterOp and dataType are here
 
   const filteredData = dataList.filter((item) => {
     const searchValue = searchTerm.toLowerCase();
@@ -139,8 +116,6 @@ useEffect(() => {
   };
 
   const stuPaid = async (payId) => {
-    const userConfirmed = window.confirm("Are you sure you want to delete this item?");
-    if(userConfirmed){
     try {
           await axios.patch(`http://localhost:5000/api/stu_enq/${progs}/payments`, {
             checkit: true,
@@ -162,10 +137,35 @@ useEffect(() => {
         } catch (err) {
           console.error(err);
         }
-    }
+
     // Implement your Paid logic here
     
   };
+
+  const stuUnPaid = async (payId) => {
+      try{
+        await axios.patch(`http://localhost:5000/api/stu_enq/${progs}/payments`, {
+          checkit: false,
+          id: payId,
+        });
+
+        setDataList(prev =>
+          prev.map(item =>
+            item.payment_id === payId ? { ...item, checkit: false } : item
+          )
+        );
+
+      setOriginalData(prev =>
+          prev.map(item =>
+            item.payment_id === payId ? { ...item, checkit: false } : item
+          )
+        );
+        paidSet(prev => prev - 1)
+      }
+      catch(err){
+        console.log(err)
+      }
+  }
 
   const stuPresentMulti = async (attId) => {
     const userConfirmed = window.confirm("Are you sure you want to make eveyone present?")
@@ -228,10 +228,12 @@ useEffect(() => {
     const stuPaidMulti = async (payId) => {
         const userConfirmed = window.confirm("Are you sure you want to make eveyone paid?")
     if(userConfirmed){
+      let c = dataList.filter(item => payId.includes(item.payment_id) && item.checkit == false);
+      let filterId = c.map( t => t.payment_id);
       try {
       await axios.patch(`http://localhost:5000/api/stu_enq/multi/${progs}/payments`, {
-        checkit: Array(payId.length).fill(true),
-        id: payId,
+        checkit: Array(c.length).fill(true),
+        id: filterId,
       });
 
       setDataList(prev =>
@@ -245,13 +247,40 @@ useEffect(() => {
         payId.includes(item.payment_id) ? { ...item, checkit: true } : item
       )
     );
-       paidSet(prev => prev + payId.length)
+       paidSet(prev => prev + c.length)
     } catch (err) {
       console.error(err);
     }
     }
   } 
+  const stuUnPaidMulti = async (payId) =>{
+    const userConfirmed = window.confirm("Are you sure you want to make eveyone unpaid?")
+    if(userConfirmed){
+      let c = dataList.filter(item => payId.includes(item.payment_id) && item.checkit == true);
+      let filterId = c.map( t => t.payment_id);
+      try {
+      await axios.patch(`http://localhost:5000/api/stu_enq/multi/${progs}/payments`, {
+        checkit: Array(c.length).fill(false),
+        id: filterId,
+      });
 
+      setDataList(prev =>
+        prev.map(item =>
+          payId.includes(item.payment_id) ? { ...item, checkit: false } : item
+        )
+      );
+
+        setOriginalData(prev =>
+      prev.map(item =>
+        payId.includes(item.payment_id) ? { ...item, checkit: false } : item
+      )
+    );
+       paidSet(prev => prev - c.length)
+    } catch (err) {
+      console.error(err);
+    }
+    }
+  }
 
   const allSelected = selectedItems.length === filteredData.length && filteredData.length > 0;
 
@@ -277,18 +306,16 @@ useEffect(() => {
                 dataType === "attendance" ? stuPresentMulti(selectedItems) : stuPaidMulti(selectedItems);
               }}
             />
-            {dataType === "attendance" && (
-              <input
-                type="submit"
-                value="❌ Mark Absent"
-                className={ss.MarkAb}
-                disabled={selectedItems.length === 0}
-                id="AllNDone"
-                onClick={() =>
-                stuAbsentMulti(selectedItems)
-              }
-              />
-            )}
+            <input
+              type="submit"
+              value={dataType === "payments" ? "❌ UnPaid" : "❌ Absent"}
+              className={ss.MarkAb}
+              disabled={selectedItems.length === 0}
+              id="AllDone"
+              onClick={() => {
+                dataType === "attendance" ? stuAbsentMulti(selectedItems) : stuUnPaidMulti(selectedItems);
+              }}
+            />
           </div>
       </div>
 
@@ -324,7 +351,6 @@ useEffect(() => {
                     type="checkbox"
                     checked={selectedItems.includes(itemId)}
                     onChange={() => toggleItem(itemId)}
-                    disabled = {item.checkit == true && dataType == "payments"}
                   />
                 </td>
                 <td>{index + 1}</td>
@@ -335,14 +361,21 @@ useEffect(() => {
                     <td>{item.month}</td>
                     <td>{item.checkit.toString()}</td>
                     <td>
-                      {!item.checkit && (
+        
                         <button
-                          className={ss["view-btn"]}
+                          className={item.checkit === true ? ss["viewbtnabs"] : ss["view-btn"]}
+                          disabled={item.checkit === true}
                           onClick={() => stuPaid(item.payment_id)}
                         >
                           Paid
                         </button>
-                      )}
+                        <button
+                        className={item.checkit === false ? ss["viewbtnabs"] : ss["view-btn"]}
+                        disabled={item.checkit === false}
+                        onClick={() => stuUnPaid(item.payment_id)}
+                      >
+                        Un Paid
+                      </button>
                     </td>
                   </>
                 ) : (

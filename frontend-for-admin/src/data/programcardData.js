@@ -10,6 +10,7 @@ const programsData = [
     attendance: 83.6,
     payment: 68,
     color: "red",
+    name:"bharatanatyam",
     path:`${p}bharatanatyam/students`,
   },
   {
@@ -20,6 +21,7 @@ const programsData = [
     attendance: 76.6,
     payment: 67,
     color: "blue",
+    name:"hindiclass",
      path:`${p}hindiclass/students`,
   },
   {
@@ -30,6 +32,7 @@ const programsData = [
     attendance: 80.9,
     payment: 70,
     color: "green",
+    name:"daycare",
     path:`${p}daycare/students`,
   },
   {
@@ -40,16 +43,18 @@ const programsData = [
     attendance: 79.4,
     payment: 68,
     color: "purple",
+    name:"carnatic",
     path:`${p}carnatic/students`,
   },
   {
-    title: "violin",
+    title: "Violin",
     icon: <FaDrum />,
     value: 17,
     description: "Classical Indian dance form from Tamil Nadu",
     attendance: 83.6,
     payment: 68,
     color: "red",
+    name:"violin",
     path:`${p}violin/students`,
   },
   {
@@ -60,6 +65,7 @@ const programsData = [
     attendance: 83.6,
     payment: 68,
     color: "red",
+    name:"tabla",
     path:`${p}tabla/students`,
   },
   {
@@ -70,6 +76,7 @@ const programsData = [
     attendance: 83.6,
     payment: 68,
     color: "red",
+    name:"piano",
     path:`${p}piano/students`,
   },
 
