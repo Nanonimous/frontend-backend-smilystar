@@ -1,8 +1,10 @@
 import React, { use, useEffect, useState } from "react";
 import ss from "./Table.module.css";
 import axios from "axios";
-
-const Table = ({ datas,filterOp,presentSet,paidSet, progs, dataType }) => {
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+pdfMake.vfs = pdfFonts.vfs; // ✅ Correct way
+const Table = ({ datas,filterOp,presentSet,paidSet, progs, dataType,onDataUpdate }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
   const [originalData, setOriginalData] = useState(datas); // keep original unfiltered data
@@ -54,6 +56,8 @@ useEffect(() => {
     );
   });
 
+
+
   const toggleSelectAll = () => {
     if (selectedItems.length === filteredData.length) {
       setSelectedItems([]);
@@ -68,220 +72,140 @@ useEffect(() => {
     );
   };
 
-  const stuPresent = async (attId) => {
+  const updateItemStatus = async (id, status, isAttendance = true) => {
     try {
-      await axios.patch(`http://localhost:5000/api/stu_enq/${progs}/attendance`, {
-        checkit: true,
-        id: attId,
-      });
-
-      setDataList(prev =>
-        prev.map(item =>
-          item.attendance_id === attId ? { ...item, checkit: true } : item
-        )
-      );
-      setOriginalData(prev =>
-      prev.map(item =>
-        item.attendance_id === attId ? { ...item, checkit: true } : item
-      )
-    );
-      presentSet(prev => prev + 1)
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const stuAbsent = async (attId) => {
-    try {
-      await axios.patch(`http://localhost:5000/api/stu_enq/${progs}/attendance`, {
-        checkit: false,
-        id: attId,
-      });
-
-      setDataList(prev =>
-        prev.map(item =>
-          item.attendance_id === attId ? { ...item, checkit: false } : item
-        )
-      );
-
-      setOriginalData(prev =>
-      prev.map(item =>
-        item.attendance_id === attId ? { ...item, checkit: false } : item
-      )
-    );
-      presentSet(prev => prev - 1)
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const stuPaid = async (payId) => {
-    try {
-          await axios.patch(`http://localhost:5000/api/stu_enq/${progs}/payments`, {
-            checkit: true,
-            id: payId,
-          });
-
-          setDataList(prev =>
-            prev.map(item =>
-              item.payment_id === payId ? { ...item, checkit: true } : item
-            )
-          );
-
-        setOriginalData(prev =>
-            prev.map(item =>
-              item.payment_id === payId ? { ...item, checkit: true } : item
-            )
-          );
-          paidSet(prev => prev + 1)
-        } catch (err) {
-          console.error(err);
+      await axios.patch(
+        `http://localhost:5000/api/stu_enq/${progs}/${
+          isAttendance ? "attendance" : "payments"
+        }`,
+        {
+          checkit: status,
+          id: id,
         }
-
-    // Implement your Paid logic here
-    
+      );
+      const key = isAttendance ? "attendance_id" : "payment_id";
+      const updateCount = isAttendance ? presentSet : paidSet;
+      const updated = dataList.map((item) =>
+        item[key] === id ? { ...item, checkit: status } : item
+      );
+      setDataList(updated);
+      setOriginalData((prev) =>
+        prev.map((item) =>
+          item[key] === id ? { ...item, checkit: status } : item
+        )
+      );
+      onDataUpdate(updated);
+      updateCount((prev) => prev + (status ? 1 : -1));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const stuUnPaid = async (payId) => {
-      try{
-        await axios.patch(`http://localhost:5000/api/stu_enq/${progs}/payments`, {
-          checkit: false,
-          id: payId,
-        });
-
-        setDataList(prev =>
-          prev.map(item =>
-            item.payment_id === payId ? { ...item, checkit: false } : item
-          )
-        );
-
-      setOriginalData(prev =>
-          prev.map(item =>
-            item.payment_id === payId ? { ...item, checkit: false } : item
-          )
-        );
-        paidSet(prev => prev - 1)
-      }
-      catch(err){
-        console.log(err)
-      }
-  }
-
-  const stuPresentMulti = async (attId) => {
-    const userConfirmed = window.confirm("Are you sure you want to make eveyone present?")
-    if(userConfirmed){
-      let c = dataList.filter(item => attId.includes(item.attendance_id) && item.checkit == false);
-      let filterId = c.map( t => t.attendance_id);
-      try {
-        await axios.patch(`http://localhost:5000/api/stu_enq/multi/${progs}/attendance`, {
-          checkit: Array(c.length).fill(true),
-          id: filterId,
-        });
-  
-        setDataList(prev =>
-          prev.map(item =>
-            attId.includes(item.attendance_id) ? { ...item, checkit: true } : item
-          )
-        );
-
-        setOriginalData(prev =>
-      prev.map(item =>
-        attId.includes(item.attendance_id) ? { ...item, checkit: true } : item
-      )
+  const updateMultipleStatus = async (ids, status, isAttendance = true) => {
+    const confirmText = `Are you sure you want to make everyone ${
+      status
+        ? isAttendance
+          ? "present"
+          : "paid"
+        : isAttendance
+        ? "absent"
+        : "unpaid"
+    }?`;
+    if (!window.confirm(confirmText)) return;
+    const key = isAttendance ? "attendance_id" : "payment_id";
+    const updateCount = isAttendance ? presentSet : paidSet;
+    const filtered = dataList.filter(
+      (item) => ids.includes(item[key]) && item.checkit !== status
     );
-        presentSet(prev => prev + c.length)
-      } catch (err) {
-        console.error(err);
-      }
+    const patchIds = filtered.map((item) => item[key]);
+    if (patchIds.length === 0) return;
+
+    try {
+      await axios.patch(
+        `http://localhost:5000/api/stu_enq/multi/${progs}/${
+          isAttendance ? "attendance" : "payments"
+        }`,
+        {
+          checkit: Array(patchIds.length).fill(status),
+          id: patchIds,
+        }
+      );
+      const updated = dataList.map((item) =>
+        ids.includes(item[key]) ? { ...item, checkit: status } : item
+      );
+      setDataList(updated);
+      setOriginalData((prev) =>
+        prev.map((item) =>
+          ids.includes(item[key]) ? { ...item, checkit: status } : item
+        )
+      );
+      onDataUpdate(updated);
+      updateCount((prev) => prev + (status ? patchIds.length : -patchIds.length));
+    } catch (err) {
+      console.error(err);
     }
+  };
+
+
+  function getMonthName(monthNumber) {
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
     
-  } 
-  const stuAbsentMulti = async (attId) => {
-    const userConfirmed = window.confirm("Are you sure you want to make eveyone absent?")
-    if(userConfirmed){
-      let c = dataList.filter(item => attId.includes(item.attendance_id) && item.checkit == true);
-      let filterId = c.map( t => t.attendance_id);
-      try {
-      await axios.patch(`http://localhost:5000/api/stu_enq/multi/${progs}/attendance`, {
-        checkit: Array(c.length).fill(false),
-        id: filterId,
-      });
+    // monthNumber should be 1-12
+    return monthNames[monthNumber - 1] || "Invalid Month";
+}
+  const handlePrintRecipt = (stuName,monFees,mainData) => {
+        const headers = ["month", 'fees Amount',"status"];
 
-      setDataList(prev =>
-        prev.map(item =>
-          attId.includes(item.attendance_id) ? { ...item, checkit: false } : item
-        )
-      );
-      
-      setOriginalData(prev =>
-      prev.map(item =>
-        attId.includes(item.attendance_id) ? { ...item, checkit: false } : item
-      )
-    );  
-       presentSet(prev => prev - c.length)
-    } catch (err) {
-      console.error(err);
-    }
-    }
-        
-  } 
-    const stuPaidMulti = async (payId) => {
-        const userConfirmed = window.confirm("Are you sure you want to make eveyone paid?")
-    if(userConfirmed){
-      let c = dataList.filter(item => payId.includes(item.payment_id) && item.checkit == false);
-      let filterId = c.map( t => t.payment_id);
-      try {
-      await axios.patch(`http://localhost:5000/api/stu_enq/multi/${progs}/payments`, {
-        checkit: Array(c.length).fill(true),
-        id: filterId,
-      });
+        const rows = mainData.map((item) => [
+        getMonthName(item.month),
+        monFees,
+        item.checkit ? 'paid' : 'Pending'
+        ]);
+        const totalPaid = mainData.filter(item => item.checkit).length * monFees;
+        const docDefinition = {
+        content: [
+        { text: ` ${stuName.toUpperCase()} (${progs}) Fees details `, style: 'header' },
+        {
+          table: {
+            headerRows: 1,
+            widths: ['*', '*', '*'],
+            body: [headers, ...rows]
+          }
+        },
+        {
+        text: `\nTotal Paid Fees: ₹${totalPaid}`,
+        margin: [0, 20, 0, 0],
+        bold: true,
+        fontSize: 14,
+        alignment: 'right'
+      }
+        ],
+        styles: {
+        header: {
+          fontSize: 18,
+          bold: true,
+          alignment: 'center',
+          margin: [0, 0, 0, 20]
+        }
+        }
+        };
 
-      setDataList(prev =>
-        prev.map(item =>
-          payId.includes(item.payment_id) ? { ...item, checkit: true } : item
-        )
-      );
+        pdfMake.createPdf(docDefinition).download(`${stuName}_Payments.pdf`);
+        };
 
-        setOriginalData(prev =>
-      prev.map(item =>
-        payId.includes(item.payment_id) ? { ...item, checkit: true } : item
-      )
-    );
-       paidSet(prev => prev + c.length)
-    } catch (err) {
-      console.error(err);
-    }
-    }
-  } 
-  const stuUnPaidMulti = async (payId) =>{
-    const userConfirmed = window.confirm("Are you sure you want to make eveyone unpaid?")
-    if(userConfirmed){
-      let c = dataList.filter(item => payId.includes(item.payment_id) && item.checkit == true);
-      let filterId = c.map( t => t.payment_id);
-      try {
-      await axios.patch(`http://localhost:5000/api/stu_enq/multi/${progs}/payments`, {
-        checkit: Array(c.length).fill(false),
-        id: filterId,
-      });
 
-      setDataList(prev =>
-        prev.map(item =>
-          payId.includes(item.payment_id) ? { ...item, checkit: false } : item
-        )
-      );
+  const handleOneRecipt = async (stuId) =>{
+    try{
+      const res = await axios.get(`http://localhost:5000/api/stu_enq/${progs}/payments?pstudId=${stuId.student_id}`);
 
-        setOriginalData(prev =>
-      prev.map(item =>
-        payId.includes(item.payment_id) ? { ...item, checkit: false } : item
-      )
-    );
-       paidSet(prev => prev - c.length)
-    } catch (err) {
-      console.error(err);
-    }
+      handlePrintRecipt(stuId.student_name,stuId.monthly_fee,res.data);
+    }catch(err){
+      console.log(err)
     }
   }
-
   const allSelected = selectedItems.length === filteredData.length && filteredData.length > 0;
 
   return (
@@ -302,9 +226,13 @@ useEffect(() => {
               className={ss.MarkPr}
               disabled={selectedItems.length === 0}
               id="AllDone"
-              onClick={() => {
-                dataType === "attendance" ? stuPresentMulti(selectedItems) : stuPaidMulti(selectedItems);
-              }}
+             onClick={() => {
+              if (dataType === "payments") {
+                updateMultipleStatus(selectedItems, true, false);
+              } else {
+                updateMultipleStatus(selectedItems, true, true);
+              }
+            }}
             />
             <input
               type="submit"
@@ -313,8 +241,12 @@ useEffect(() => {
               disabled={selectedItems.length === 0}
               id="AllDone"
               onClick={() => {
-                dataType === "attendance" ? stuAbsentMulti(selectedItems) : stuUnPaidMulti(selectedItems);
-              }}
+              if (dataType === "payments") {
+                updateMultipleStatus(selectedItems, false, false);
+              } else {
+                updateMultipleStatus(selectedItems, false, true);
+              }
+            }}
             />
           </div>
       </div>
@@ -358,35 +290,60 @@ useEffect(() => {
                 <td>{item.phone_number}</td>
                 {dataType === "payments" ? (
                   <>
-                    <td>{item.month}</td>
-                    <td>{item.checkit.toString()}</td>
+                    <td>{getMonthName(item.month)}</td>
+                    <td>{item.checkit ? "paid" : "pending"}</td>
                     <td>
         
                         <button
                           className={item.checkit === true ? ss["viewbtnabs"] : ss["view-btn"]}
                           disabled={item.checkit === true}
-                          onClick={() => stuPaid(item.payment_id)}
+                          onClick={() =>
+                          updateItemStatus(
+                          item.payment_id,
+                          !item.checkit,
+                          false
+                      )
+                    }
                         >
                           Paid
                         </button>
                         <button
                         className={item.checkit === false ? ss["viewbtnabs"] : ss["view-btn"]}
                         disabled={item.checkit === false}
-                        onClick={() => stuUnPaid(item.payment_id)}
+                        onClick={() =>
+                          updateItemStatus(
+                          item.payment_id,
+                          !item.checkit,
+                          false
+                      )
+                    }
                       >
                         Un Paid
+                      </button>
+
+                      <button
+                      className={ss["recipt-btn"]}
+                      onClick={()=>handleOneRecipt(item)}
+                      >
+                        generate recipt
                       </button>
                     </td>
                   </>
                 ) : (
                   <>
                     <td>{item.attendance_date?.split("T")[0]}</td>
-                    <td>{item.checkit.toString()}</td>
+                    <td>{item.checkit ? "present" : "absent"}</td>
                     <td>
                       <button
                         className={ss["present-btn"]}
                         disabled={item.checkit === true}
-                        onClick={() => stuPresent(item.attendance_id)}
+                        onClick={() =>
+                          updateItemStatus(
+                          item.attendance_id,
+                          !item.checkit,
+                          true
+                      )
+                    }
                       >
                         ✅ Present 
                       </button> 
@@ -394,7 +351,13 @@ useEffect(() => {
                       <button
                         className={ss["absent-btn"]}
                         disabled={item.checkit === false}
-                        onClick={() => stuAbsent(item.attendance_id)}
+                        onClick={() =>
+                          updateItemStatus(
+                          item.attendance_id,
+                          !item.checkit,
+                          true
+                      )
+                    }
                       >
                         ❌ Absent
                       </button>

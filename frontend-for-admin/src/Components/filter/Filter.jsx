@@ -1,6 +1,6 @@
 import "./DateFilterComponent.css";
 
-const DateFilterComponent = ({ selectedDate, setSelectedDate, filter, setFilter,setclassDay,setDisclassDay,disClassDay, dbs }) => {
+const DateFilterComponent = ({ selectedDate, setSelectedDate, filter, setFilter,setclassDay,onclickingClassDay,onclickingNoClassDay,onclickingPrint,classDay, dbs }) => {
   const navigateDate = (direction) => {
     setSelectedDate((prevDate) => {
       const newDate = new Date(prevDate);
@@ -18,6 +18,7 @@ const DateFilterComponent = ({ selectedDate, setSelectedDate, filter, setFilter,
 
   const handleDateChange = (event) => {
     const value = event.target.value;
+    console.log("in filter page ",value)
     if (dbs === "payments") {
       const [year, month] = value.split("-");
       setSelectedDate(new Date(parseInt(year), parseInt(month) - 1, 1));
@@ -25,6 +26,18 @@ const DateFilterComponent = ({ selectedDate, setSelectedDate, filter, setFilter,
       setSelectedDate(new Date(value));
     }
   };
+  console.log("test1",selectedDate.toISOString().split("T")[0])
+
+  console.log("test1",new Date().toISOString().split("T")[0])
+  const now = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+const istNow = new Date(now);
+
+const yyyy = istNow.getFullYear();
+const mm = String(istNow.getMonth() + 1).padStart(2, "0");
+const dd = String(istNow.getDate()).padStart(2, "0");
+
+const istDateInput = `${yyyy}-${mm}-${dd}`;
+ // "2025-05-20"
 
   return (
     <div className="date-filter-container">
@@ -45,12 +58,50 @@ const DateFilterComponent = ({ selectedDate, setSelectedDate, filter, setFilter,
         <button onClick={() => navigateDate("next")} className="nav-button">▶</button>
       </div>
       <div className="left-side">
-      {dbs == "attendance" && !disClassDay ? (
-            <button className="nav-button-class" onClick={()=>{
-              setclassDay(true)
-              setDisclassDay(true)}}>Class Day</button>
-          ):""}
+          {dbs === "payments" && (
+        <button
+        className="nav-button-class"
+        onClick={onclickingPrint}
+        >
+        print recipt
+        </button>
+        )}
 
+        {dbs === "attendance" && (
+        <button
+        className="nav-button-class"
+        onClick={onclickingPrint}
+        >
+        generate recipt
+        </button>
+        )}
+
+
+        {dbs === "attendance" && (istDateInput == selectedDate.toISOString().split("T")[0] )? (
+        <button
+        className="nav-button-class"
+        disabled={classDay}
+        onClick={() => {
+        onclickingClassDay();
+        }}
+        >
+        Class Day
+        </button>
+        ):""}
+
+ 
+
+        {dbs === "attendance" && (istDateInput == selectedDate.toISOString().split("T")[0]) ? (
+        <button
+        className="nav-button-class"
+        disabled={!classDay}
+        onClick={() => {
+        onclickingNoClassDay();
+        }}
+        >
+        No Class Day
+        </button>
+        ):""}
 
       {dbs == "payments" ? (
       <select value={filter} onChange={(e) => setFilter(e.target.value)} className="filter-dropdown">
