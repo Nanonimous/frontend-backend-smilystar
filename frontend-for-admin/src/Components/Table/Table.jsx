@@ -10,7 +10,6 @@ const Table = ({ datas,filterOp,presentSet,paidSet, progs, dataType,onDataUpdate
   const [originalData, setOriginalData] = useState(datas); // keep original unfiltered data
   const [dataList, setDataList] = useState(datas);
 
-
 useEffect(() => {
   setOriginalData(datas);
 }, [datas]);

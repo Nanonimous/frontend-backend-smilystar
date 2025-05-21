@@ -53,7 +53,7 @@ export default function Payment(){
               const database = pathParts[1];
               let fDate = selectedDate.toISOString().split('T')[0].split("-")
               let filterYear = parseInt(fDate[0]);
-              let filterMonth = parseInt(fDate[1]);
+              let filterMonth = parseInt(fDate[1]); 
               let filterDate = parseInt(fDate[2]);
               console.log(filterYear,filterMonth,filterDate);
             if(database === "payments"){
@@ -76,6 +76,7 @@ export default function Payment(){
                   const isClassDay = dates.includes(selectedDate.toISOString().split('T')[0]);
                   console.log(isClassDay)
                   setClassDay(isClassDay)
+                  setTableData([])
                   if (isClassDay) {
                     const resultData = await axios.get(`http://localhost:5000/api/stu_enq/${program}/attendance?aMonth=${filterMonth}&aYear=${filterYear}&aDate=${filterDate}`);
                     const data = resultData.data;
@@ -152,59 +153,121 @@ export default function Payment(){
         return monthNames[monthNumber - 1] || "Invalid Month";
 }
 
-       const handlePrintRecipt = () => {
-            let fDate = selectedDate.toISOString().split('T')[0].split("-")
-              let filterMonth = parseInt(fDate[1]);
-            const pathParts = location.pathname.split("/").filter(Boolean);
-              let program = pathParts[0];
-              const database = pathParts[1];
-              if (tableData.length === 0) {
-              alert("No data to export.");
-              return;
+      const getAttendance = async (m) =>{
+        try{
+          const resp = await axios.get(`http://localhost:5000/api/stu_enq/daycare/attendance?areciptMon=${m}`)
+          console.log(resp.data)
+          const groupedMap = new Map();
+
+          resp.data.forEach(record => {
+              const { student_name, attendance_date, checkit } = record;
+
+              if (!groupedMap.has(student_name)) {
+                  groupedMap.set(student_name, []);
               }
-              let x = class_dates.filter((item)=>parseInt(item.attendance_date.split("-")[1]) == filterMonth)
-              console.log(x)
-              let list_Date = x.map((item,index)=>{
 
-                  return item.attendance_date
-              })
+              groupedMap.get(student_name).push({ attendance_date, checkit });
+          });
 
-              const headers = ['Name', 'Contact','fees Amount', 'Status']
+          // Step 2: Convert to desired format with sorted checkit_list
+          const result = Array.from(groupedMap.entries()).map(([student_name, checkit_list]) => ({
+              student_name,
+              checkit_list: checkit_list.sort(
+                  (a, b) => new Date(a.attendance_date) - new Date(b.attendance_date)
+              )
+          }));
+          return result
+        }catch(err){
+          console.log(err)
+        }
+      }
 
-              
-              const rows = tableData.map((item) => [
-              
-              item.student_name || 'N/A',
-              item.phone_number || 'N/A',
-              item.monthly_fee,
-              item.checkit ? 'paid' : 'Pending'
-              
-              
-              ]);
+const handlePrintRecipt = async () => {
+  let fDate = selectedDate.toISOString().split('T')[0].split("-");
+  let filterMonth = parseInt(fDate[1]);
+  const pathParts = location.pathname.split("/").filter(Boolean);
+  let program = pathParts[0];
+  const database = pathParts[1];
 
-              const docDefinition = {
-              content: [
-              { text: ` ${program.toUpperCase()} (${getMonthName(filterMonth)}) Fees details `, style: 'header' },
-              {
-                table: {
-                  headerRows: 1,
-                  widths: ['*', '*', '*', '*'] ,
-                  body: [headers, ...rows]
-                }
-              }
-              ],
-              styles: {
-              header: {
-                fontSize: 18,
-                bold: true,
-                alignment: 'center',
-                margin: [0, 0, 0, 20]
-              }
-              }
-              };
+  if (tableData.length === 0) {
+    alert("No data to export.");
+    return;
+  }
 
-              pdfMake.createPdf(docDefinition).download(`${getMonthName(filterMonth)}_Payments.pdf`);
-              };
+  // Filter class dates for the selected month and sort them
+  let x = class_dates.filter((item) => parseInt(item.attendance_date.split("-")[1]) === filterMonth);
+  x.sort((a, b) => new Date(a.attendance_date) - new Date(b.attendance_date)); // sort by date ascending
+  let list_Date = x.map((item) => item.attendance_date);
+
+  let attDel = await getAttendance(filterMonth);
+
+  // Define headers
+  const headers = database === "payments"
+    ? ['Name', 'Contact', 'Fees Amount', 'Status']
+    : ['Name', ...list_Date, 'Total Present', 'Total Absent'];
+
+  // Construct table rows
+  const rows = database === "payments"
+    ? tableData.map((item) => [
+        item.student_name || 'N/A',
+        item.phone_number || 'N/A',
+        item.monthly_fee,
+        item.checkit ? 'Paid' : 'Pending'
+      ])
+    : attDel.map((item) => {
+        let presentCount = 0;
+        let absentCount = 0;
+
+        const statusList = list_Date.map(date => {
+          const found = item.checkit_list.find(x => x.attendance_date === date);
+          if (found) {
+            if (found.checkit) presentCount++;
+            else absentCount++;
+            return found.checkit ? "Present" : "Absent";
+          } else {
+            return "N/A";
+          }
+        });
+
+        return [
+          item.student_name || 'N/A',
+          ...statusList,
+          presentCount,
+          absentCount
+        ];
+      });
+
+  // PDF document structure
+  const docDefinition = {
+    content: [
+      {
+        text: ` ${program.toUpperCase()} (${getMonthName(filterMonth)}) ${database === "payments" ? "Fees" : "Attendance"} details`,
+        style: 'header'
+      },
+      {
+        table: {
+          headerRows: 1,
+          widths: database === "payments"
+            ? ['*', '*', '*', '*']
+            : Array(list_Date.length + 3).fill('*'), // +3 for Name, Total Present, Total Absent
+          body: [headers, ...rows]
+        }
+      }
+    ],
+    styles: {
+      header: {
+        fontSize: 18,
+        bold: true,
+        alignment: 'center',
+        margin: [0, 0, 0, 20]
+      }
+    }
+  };
+
+  pdfMake.createPdf(docDefinition).download(`${getMonthName(filterMonth)}_${database === "payments" ? "Payments" : "Attendance"}.pdf`);
+};
+
+
 
 
 
