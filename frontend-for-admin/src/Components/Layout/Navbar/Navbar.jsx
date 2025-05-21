@@ -14,6 +14,8 @@ export default function Navbar({notCounter}) {
         const basePath = '/'; // You can change this if needed
         const path = `${basePath}${program}/students`;
         navigate(path);
+        window.location.reload();  
+        
         setShowDropdown(false); // Close dropdown after navigation
     };
 

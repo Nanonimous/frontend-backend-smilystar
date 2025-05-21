@@ -97,8 +97,8 @@ export default function Dashboard() {
                             ))}
 
                 </div>
-                    <h2>Quick Actions</h2>
-                        <Quickaction />
+                    {/* <h2>Quick Actions</h2>
+                        <Quickaction /> */}
                 </div>
             </div>
 

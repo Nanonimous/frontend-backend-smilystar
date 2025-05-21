@@ -14,12 +14,12 @@ export default function ProgramCard({ title, dataKey, icon, description, attenda
         <div className={pc.cardHeader}>
           <div className={pc.cardIcon}>{icon}</div>
           <h2 className={pc.cardTitle}>{title}</h2>
-          <span className={pc.cardValue}>{count?.[dataKey] ?? "N/A"}</span>
+          <span className={pc.cardValue}>{count?.[dataKey] ?? "  "}</span>
         </div>
 
         <p className={pc.cardDescription}>{description}</p>
 
-        <div className={pc.cardMetrics}>
+        {/* <div className={pc.cardMetrics}>
           <div className={pc.metric}>
             <span>Attendance Rate</span>
             <div className={pc.progressBar}>
@@ -35,7 +35,7 @@ export default function ProgramCard({ title, dataKey, icon, description, attenda
             </div>
             <span className={pc.rate}>{payment}%</span>
           </div>
-        </div>
+        </div> */}
 
         <a href={path}>
           <button className={pc.viewButton}>
