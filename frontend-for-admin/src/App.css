@@ -1,9 +1,6 @@
 .main{
     display: flex;
-    flex-direction: row;
-
-
-    
+    flex-direction: row;   
 }
 .l{
     width: auto;
@@ -14,3 +11,6 @@
    
 }
 
+*{
+     font-family: "Roboto", sans-serif;
+    }

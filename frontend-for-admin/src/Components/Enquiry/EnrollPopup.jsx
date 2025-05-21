@@ -4,12 +4,10 @@ import { useLocation, useSearchParams } from "react-router-dom"; // Import useLo
 import axios from "axios";
 
 
-const EnrollPopup = ({prog, isOpen, onClose, enquiry,mode ,onEnrollSuccess ,onStudentSuccess}) => {
+const EnrollPopup = ({prog,isOpen, onClose, enquiry,mode ,onEnrollSuccess ,onStudentSuccess}) => {
       const [searchParams] = useSearchParams(); // Get URL parameters
-    
-      const program = searchParams.get("program") || "daycare";
-      console.log(prog);
-      console.log(enquiry)
+
+      console.log(enquiry);
       const [formData, setFormData] = useState({
         student_name: `${enquiry?.first_name || ""} ${enquiry?.last_name || ""}`.trim(),
         father_name: "",
@@ -41,11 +39,6 @@ const EnrollPopup = ({prog, isOpen, onClose, enquiry,mode ,onEnrollSuccess ,onSt
       const res = await axios.post(`http://localhost:5000/api/stu_enq/${prog}/students`,formData)
       const result = res.data;
       console.log("student added successfully" , result);
-      // const res2 = await axios.get(`http://localhost:5000/api/stu_enq/${program}/students`)
-      // const result2 = res2.data.student_id;
-      // const res2 = await axios.post(`http://localhost:5000/api/stu_enq/${program}/attendance`,{
-      //   "id": 
-      // })
 
       onClose()
       {mode == "addstudent" ? onStudentSuccess(formData) : onEnrollSuccess() }

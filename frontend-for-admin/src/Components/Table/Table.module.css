@@ -96,6 +96,17 @@
     cursor: pointer;
     margin-left: 5px;
   }
+
+    .recipt-btn {
+    background: #0e8307;
+    color: white;
+    border: none;
+    padding: 5px;
+    width: 5em;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 5px;
+  }
   
 
   .contact-btn {
