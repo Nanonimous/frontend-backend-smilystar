@@ -11,7 +11,9 @@ import { AiOutlineConsoleSql } from "react-icons/ai";
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.vfs; // ✅ Correct way
-
+import dotenv from "dotenv";
+dotenv.config();
+const Domain = process.env.API;
 
 export default function Payment(){
 
@@ -57,7 +59,7 @@ export default function Payment(){
               let filterDate = parseInt(fDate[2]);
               console.log(filterYear,filterMonth,filterDate);
             if(database === "payments"){
-              const resultData = await axios.get(`http://localhost:5000/api/stu_enq/${program}/payments?pMonth=${filterMonth}&pYear=${filterYear}`);
+              const resultData = await axios.get(`${Domain}api/stu_enq/${program}/payments?pMonth=${filterMonth}&pYear=${filterYear}`);
               const data = resultData.data;
               console.log(data)
               setTableData(data);
@@ -66,7 +68,7 @@ export default function Payment(){
               setTotal(data.length);
               console.log(paidCount, data.length);
               } else if(database === "attendance"){
-                const checkerCall = await axios.get(`http://localhost:5000/api/stu_enq/${program}/class_dates`);
+                const checkerCall = await axios.get(`${Domain}api/stu_enq/${program}/class_dates`);
                 console.log("test",new Date())
                 setClass_dates(checkerCall.data)
                 let dates = checkerCall.data.map((item) => {
@@ -78,7 +80,7 @@ export default function Payment(){
                   setClassDay(isClassDay)
                   setTableData([])
                   if (isClassDay) {
-                    const resultData = await axios.get(`http://localhost:5000/api/stu_enq/${program}/attendance?aMonth=${filterMonth}&aYear=${filterYear}&aDate=${filterDate}`);
+                    const resultData = await axios.get(`${Domain}api/stu_enq/${program}/attendance?aMonth=${filterMonth}&aYear=${filterYear}&aDate=${filterDate}`);
                     const data = resultData.data;
                     console.log(resultData.data);
                     setTableData(data);
@@ -100,14 +102,14 @@ export default function Payment(){
         const handleClassDay = async () =>{
 
           try{
-          const respo = await axios.post(`http://localhost:5000/api/stu_enq/${progs}/class_dates`);
+          const respo = await axios.post(`${Domain}api/stu_enq/${progs}/class_dates`);
           console.log(respo.data);
-          const stud = await axios.get(`http://localhost:5000/api/stu_enq/${progs}/students`);
+          const stud = await axios.get(`${Domain}api/stu_enq/${progs}/students`);
           let stuId = stud.data.map((item)=>{
             return item.student_id
           })
           console.log(stuId);
-          const respo2 = await axios.post(`http://localhost:5000/api/stu_enq/multi/${progs}/attendance`,{
+          const respo2 = await axios.post(`${Domain}api/stu_enq/multi/${progs}/attendance`,{
               "id":stuId
           });
             console.log(respo2.data);
@@ -125,13 +127,13 @@ export default function Payment(){
                 return item.attendance_id
               })
               console.log("ids",ids)
-            const respo1 = await axios.delete(`http://localhost:5000/api/stu_enq/multi/${progs}/attendance`,{
+            const respo1 = await axios.delete(`${Domain}api/stu_enq/multi/${progs}/attendance`,{
               "data":{
                 "id":ids
               }
             });
             console.log(respo1.data);
-            const respo2 = await axios.delete(`http://localhost:5000/api/stu_enq/${progs}/class_dates?id=${selectedDate.toISOString().split('T')[0]}`);
+            const respo2 = await axios.delete(`${Domain}api/stu_enq/${progs}/class_dates?id=${selectedDate.toISOString().split('T')[0]}`);
             console.log(respo2.data);
 
                   setTableData([]);
@@ -155,8 +157,8 @@ export default function Payment(){
 
       const getAttendance = async (m) =>{
         try{
-          const resp = await axios.get(`http://localhost:5000/api/stu_enq/daycare/attendance?areciptMon=${m}`)
-          console.log(resp.data)
+          const resp = await axios.get(`${Domain}api/stu_enq/daycare/attendance?areciptMon=${m}`)
+          console.log("attend fetach ", resp.data)
           const groupedMap = new Map();
 
           resp.data.forEach(record => {
@@ -193,20 +195,18 @@ const handlePrintRecipt = async () => {
     alert("No data to export.");
     return;
   }
-
-  // Filter class dates for the selected month and sort them
-  let x = class_dates.filter((item) => parseInt(item.attendance_date.split("-")[1]) === filterMonth);
-  x.sort((a, b) => new Date(a.attendance_date) - new Date(b.attendance_date)); // sort by date ascending
+  
+let x = (class_dates || []).filter((item) =>
+  parseInt(item.attendance_date.split("-")[1]) === filterMonth
+);  x.sort((a, b) => new Date(a.attendance_date) - new Date(b.attendance_date));
   let list_Date = x.map((item) => item.attendance_date);
-
+  console.log(filterMonth)  
   let attDel = await getAttendance(filterMonth);
 
-  // Define headers
   const headers = database === "payments"
     ? ['Name', 'Contact', 'Fees Amount', 'Status']
     : ['Name', ...list_Date, 'Total Present', 'Total Absent'];
 
-  // Construct table rows
   const rows = database === "payments"
     ? tableData.map((item) => [
         item.student_name || 'N/A',
@@ -237,29 +237,38 @@ const handlePrintRecipt = async () => {
         ];
       });
 
-  // PDF document structure
   const docDefinition = {
+    pageOrientation: 'landscape', // 🔄 Allows more columns
+    pageSize: 'A4',
     content: [
       {
-        text: ` ${program.toUpperCase()} (${getMonthName(filterMonth)}) ${database === "payments" ? "Fees" : "Attendance"} details`,
+        text: `${program.toUpperCase()} (${getMonthName(filterMonth)}) ${database === "payments" ? "Fees" : "Attendance"} details`,
         style: 'header'
       },
       {
+        style: 'tableStyle',
         table: {
           headerRows: 1,
-          widths: database === "payments"
-            ? ['*', '*', '*', '*']
-            : Array(list_Date.length + 3).fill('*'), // +3 for Name, Total Present, Total Absent
+          widths: Array(headers.length).fill('*'), // Dynamic widths
           body: [headers, ...rows]
+        },
+        layout: {
+          fillColor: function (rowIndex, node, columnIndex) {
+            return rowIndex === 0 ? '#CCCCCC' : null; // Light gray header
+          }
         }
       }
     ],
     styles: {
       header: {
-        fontSize: 18,
+        fontSize: 16,
         bold: true,
         alignment: 'center',
-        margin: [0, 0, 0, 20]
+        margin: [0, 0, 0, 10]
+      },
+      tableStyle: {
+        fontSize: 8, // Smaller font for more content
+        margin: [0, 5, 0, 15]
       }
     }
   };

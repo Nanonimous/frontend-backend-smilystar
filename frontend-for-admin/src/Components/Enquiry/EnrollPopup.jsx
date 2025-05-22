@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import ep from "./EnrollPopup.module.css"; // Import CSS file
 import { useLocation, useSearchParams } from "react-router-dom"; // Import useLocation
 import axios from "axios";
+import dotenv from "dotenv";
+dotenv.config();
+const Domain = process.env.API;
 
-
-const EnrollPopup = ({prog,isOpen, onClose, enquiry,mode ,onEnrollSuccess ,onStudentSuccess}) => {
+const EnrollPopup = ({enquiry,mode ,onClose, onEnroll ,onAdd}) => {
       const [searchParams] = useSearchParams(); // Get URL parameters
-
-      console.log(enquiry);
+          const location = useLocation(); // Get the current location
       const [formData, setFormData] = useState({
         student_name: `${enquiry?.first_name || ""} ${enquiry?.last_name || ""}`.trim(),
         father_name: "",
@@ -35,13 +36,15 @@ const EnrollPopup = ({prog,isOpen, onClose, enquiry,mode ,onEnrollSuccess ,onStu
     formData.age = parseInt(formData.age)
     formData.monthly_fee = parseInt(formData.monthly_fee)
       console.log(formData)
-    try {
-      const res = await axios.post(`http://localhost:5000/api/stu_enq/${prog}/students`,formData)
+      let prog = (mode == "addstudent") ? location.pathname.split("/").filter(Boolean)[0] : enquiry.programs
+    try { 
+      
+      const res = await axios.post(`${Domain}api/stu_enq/${prog}/students`,formData)
       const result = res.data;
       console.log("student added successfully" , result);
 
       onClose()
-      {mode == "addstudent" ? onStudentSuccess(formData) : onEnrollSuccess() }
+      {mode == "addstudent" ? onAdd(formData) : onEnroll() }
       
     } catch (error) {
       console.error("Error:", error);
@@ -51,13 +54,13 @@ const EnrollPopup = ({prog,isOpen, onClose, enquiry,mode ,onEnrollSuccess ,onStu
     }
   };
 
-    if (!isOpen) return null;
+    // if (!isOpen) return null;
 
     return (
         <div className={ep.popupOverlay}>
             <div className={ep.popupContent}>
                 <span className={ep.closeIcon} onClick={onClose}>&times;</span>
-                {mode === "view" && (
+{mode === "view" && (
   <>
     <h2>Student Details</h2>
     <p><strong>Name:</strong> {enquiry?.first_name || ""} {enquiry?.last_name || ""}</p>
@@ -79,10 +82,10 @@ const EnrollPopup = ({prog,isOpen, onClose, enquiry,mode ,onEnrollSuccess ,onStu
       <input type="text" name="student_name" value={formData.student_name} onChange={handleChange} required />
 
       <label>Father's Name:</label>
-      <input type="text" name="father_name" value={formData.father_name} onChange={handleChange} required />
+      <input type="text" name="father_name" value={formData.father_name} onChange={handleChange} />
 
       <label>Mother's Name:</label>
-      <input type="text" name="mother_name" value={formData.mother_name} onChange={handleChange} required />
+      <input type="text" name="mother_name" value={formData.mother_name} onChange={handleChange} />
 
       <label>Address:</label>
       <textarea name="address" value={formData.address} onChange={handleChange} required></textarea>
@@ -122,10 +125,10 @@ const EnrollPopup = ({prog,isOpen, onClose, enquiry,mode ,onEnrollSuccess ,onStu
       <input type="text" name="student_name" value={formData.student_name} onChange={handleChange} required />
 
       <label>Father's Name:</label>
-      <input type="text" name="father_name" value={formData.father_name} onChange={handleChange} required />
+      <input type="text" name="father_name" value={formData.father_name} onChange={handleChange} />
 
       <label>Mother's Name:</label>
-      <input type="text" name="mother_name" value={formData.mother_name} onChange={handleChange} required />
+      <input type="text" name="mother_name" value={formData.mother_name} onChange={handleChange} />
 
       <label>Address:</label>
       <textarea name="address" value={formData.address} onChange={handleChange} required></textarea>

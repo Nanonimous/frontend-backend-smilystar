@@ -8,6 +8,9 @@ import cardsData from "../data/StartcardsData";
 import programsData from "../data/programcardData";
 import Menu from "../Components/Layout/Sidebar/Menu";
 import axios from "axios"
+import dotenv from "dotenv";
+dotenv.config();
+const Domain = process.env.API;
 export default function Dashboard() {   
     
     const [isMenuOpen, setIsMenuOpen] = useState(false); // Track menu state
@@ -21,7 +24,7 @@ export default function Dashboard() {
           try {
             console.log("fetch from the enquiry");
       
-            const response = await axios.get(`http://localhost:5000/api/stu_enq/daycare/enquiry`);
+            const response = await axios.get(`${Domain}api/stu_enq/daycare/enquiry`);
             console.log("API Response:", response.data);
       
             const not = response.data.filter(tn => tn.checkit === "new");
@@ -31,7 +34,7 @@ export default function Dashboard() {
             
             const studentCounts = await Promise.all(
               progs.map(async (program) => {
-                const res = await axios.get(`http://localhost:5000/api/stu_enq/${program}/students`);
+                const res = await axios.get(`${Domain}api/stu_enq/${program}/students`);
                 return res.data.length;
               })
             );

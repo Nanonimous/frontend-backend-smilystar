@@ -9,7 +9,9 @@ import Menu from "../Components/Layout/Sidebar/Menu";
 import Navbar from "../Components/Layout/Navbar/Navbar";
 import EnquiryTable from "../Components/Enquiry/EnquiryTable";
 
-
+import dotenv from "dotenv";
+dotenv.config();
+const Domain = process.env.API;
 
 
 
@@ -54,7 +56,7 @@ export default function Enquiry(){
           try {
             console.log("hello to fetch data from table");
             
-            const response = await axios.get(`http://localhost:5000/api/stu_enq/${program}/${tablename}`); // Replace with your API endpoint
+            const response = await axios.get(`${Domain}api/stu_enq/${program}/${tablename}`); // Replace with your API endpoint
             console.log("API Response:", response.data); 
               if (tablename === "enquiry") {
                     

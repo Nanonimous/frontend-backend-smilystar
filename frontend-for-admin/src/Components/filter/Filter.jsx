@@ -1,31 +1,34 @@
 import "./DateFilterComponent.css";
 
 const DateFilterComponent = ({ selectedDate, setSelectedDate, filter, setFilter,setclassDay,onclickingClassDay,onclickingNoClassDay,onclickingPrint,classDay, dbs }) => {
-  const navigateDate = (direction) => {
-    setSelectedDate((prevDate) => {
-      const newDate = new Date(prevDate);
-      if (dbs === "payments") {
-        // Change by month
-        newDate.setMonth(direction === "prev" ? newDate.getMonth() - 1 : newDate.getMonth() + 1);
-        newDate.setDate(1); // Always set to first day of the month
-      } else {
-        // Change by day
-        newDate.setDate(direction === "prev" ? newDate.getDate() - 1 : newDate.getDate() + 1);
-      }
-      return newDate;
-    });
-  };
-
-  const handleDateChange = (event) => {
-    const value = event.target.value;
-    console.log("in filter page ",value)
+const navigateDate = (direction) => {
+  setSelectedDate((prevDate) => {
     if (dbs === "payments") {
-      const [year, month] = value.split("-");
-      setSelectedDate(new Date(parseInt(year), parseInt(month) - 1, 1));
+      const year = prevDate.getFullYear();
+      const month = prevDate.getMonth();
+
+      const newMonth = direction === "prev" ? month - 1 : month + 1;
+      return new Date(year, newMonth, 2); // Set day to 1, ignore previous day
     } else {
-      setSelectedDate(new Date(value));
+      const newDate = new Date(prevDate);
+      newDate.setDate(direction === "prev" ? newDate.getDate() - 1 : newDate.getDate() + 1);
+      return newDate;
     }
-  };
+  });
+};
+
+
+const handleDateChange = (event) => {
+  const value = event.target.value;
+
+  if (dbs === "payments") {
+    const [year, month] = value.split("-");
+    setSelectedDate(new Date(parseInt(year), parseInt(month) - 1, 2)); // Always set day = 1
+  } else {
+    setSelectedDate(new Date(value)); // Date input includes full date
+  }
+};
+
   console.log("test1",selectedDate.toISOString().split("T")[0])
 
   console.log("test1",new Date().toISOString().split("T")[0])
@@ -46,11 +49,12 @@ const istDateInput = `${yyyy}-${mm}-${dd}`;
 
         <input
           type={dbs === "payments" ? "month" : "date"}
-          value={
-            dbs === "payments"
-              ? `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}`
-              : selectedDate.toISOString().split("T")[0]
-          }
+            value={
+              dbs === "payments"
+                ? `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}`
+                : selectedDate.toISOString().split("T")[0]
+            }
+
           onChange={handleDateChange}
           className="date-input"
         />
@@ -103,7 +107,7 @@ const istDateInput = `${yyyy}-${mm}-${dd}`;
         </button>
         ):""}
 
-      {dbs == "payments" ? (
+      {dbs === "payments" ? (
       <select value={filter} onChange={(e) => setFilter(e.target.value)} className="filter-dropdown">
         <option value="all">All Students</option>
         <option value="paid">paid</option>
@@ -111,7 +115,7 @@ const istDateInput = `${yyyy}-${mm}-${dd}`;
       </select>
 
       ) :(
-              <select value={filter} onChange={(e) => setFilter(e.target.value)} className="filter-dropdown">
+      <select value={filter} onChange={(e) => setFilter(e.target.value)} className="filter-dropdown">
         <option value="all">All Students</option>
         <option value="present">Present Only</option>
         <option value="absent">Absent Only</option>

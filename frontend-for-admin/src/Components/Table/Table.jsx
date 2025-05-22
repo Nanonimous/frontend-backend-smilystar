@@ -4,6 +4,9 @@ import axios from "axios";
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.vfs; // ✅ Correct way
+import dotenv from "dotenv";
+dotenv.config();
+const Domain = process.env.API;
 const Table = ({ datas,filterOp,presentSet,paidSet, progs, dataType,onDataUpdate }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
@@ -74,7 +77,7 @@ useEffect(() => {
   const updateItemStatus = async (id, status, isAttendance = true) => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/stu_enq/${progs}/${
+        `${Domain}api/stu_enq/${progs}/${
           isAttendance ? "attendance" : "payments"
         }`,
         {
@@ -121,7 +124,7 @@ useEffect(() => {
 
     try {
       await axios.patch(
-        `http://localhost:5000/api/stu_enq/multi/${progs}/${
+        `${Domain}api/stu_enq/multi/${progs}/${
           isAttendance ? "attendance" : "payments"
         }`,
         {
@@ -155,50 +158,71 @@ useEffect(() => {
     // monthNumber should be 1-12
     return monthNames[monthNumber - 1] || "Invalid Month";
 }
-  const handlePrintRecipt = (stuName,monFees,mainData) => {
-        const headers = ["month", 'fees Amount',"status"];
+  const handlePrintRecipt = (stuName, monFees, mainData) => {
+  const headers = ["Month", "Fees Amount", "Status"];
 
-        const rows = mainData.map((item) => [
-        getMonthName(item.month),
-        monFees,
-        item.checkit ? 'paid' : 'Pending'
-        ]);
-        const totalPaid = mainData.filter(item => item.checkit).length * monFees;
-        const docDefinition = {
-        content: [
-        { text: ` ${stuName.toUpperCase()} (${progs}) Fees details `, style: 'header' },
-        {
-          table: {
-            headerRows: 1,
-            widths: ['*', '*', '*'],
-            body: [headers, ...rows]
-          }
+  // ✅ Sort months numerically
+  const sortedData = [...mainData].sort((a, b) => a.month - b.month);
+
+  const rows = sortedData.map((item) => [
+    getMonthName(item.month),
+    monFees,
+    item.checkit ? 'Paid' : 'Pending'
+  ]);
+
+  const totalPaid = sortedData.filter(item => item.checkit).length * monFees;
+
+  const docDefinition = {
+    pageOrientation: 'portrait',
+    pageSize: 'A4',
+    content: [
+      {
+        text: `${stuName.toUpperCase()} (${progs}) Fees Details`,
+        style: 'header'
+      },
+      {
+        style: 'tableStyle',
+        table: {
+          headerRows: 1,
+          widths: ['*', '*', '*'],
+          body: [headers, ...rows]
         },
-        {
+        layout: {
+          fillColor: function (rowIndex, node, columnIndex) {
+            return rowIndex === 0 ? '#CCCCCC' : null; // Light gray header row
+          }
+        }
+      },
+      {
         text: `\nTotal Paid Fees: ₹${totalPaid}`,
         margin: [0, 20, 0, 0],
         bold: true,
         fontSize: 14,
         alignment: 'right'
       }
-        ],
-        styles: {
-        header: {
-          fontSize: 18,
-          bold: true,
-          alignment: 'center',
-          margin: [0, 0, 0, 20]
-        }
-        }
-        };
+    ],
+    styles: {
+      header: {
+        fontSize: 16,
+        bold: true,
+        alignment: 'center',
+        margin: [0, 0, 0, 10]
+      },
+      tableStyle: {
+        fontSize: 10, // Smaller font for clarity
+        margin: [0, 5, 0, 15]
+      }
+    }
+  };
 
-        pdfMake.createPdf(docDefinition).download(`${stuName}_Payments.pdf`);
-        };
+  pdfMake.createPdf(docDefinition).download(`${stuName}_Payments.pdf`);
+};
+
 
 
   const handleOneRecipt = async (stuId) =>{
     try{
-      const res = await axios.get(`http://localhost:5000/api/stu_enq/${progs}/payments?pstudId=${stuId.student_id}`);
+      const res = await axios.get(`${Domain}api/stu_enq/${progs}/payments?pstudId=${stuId.student_id}`);
 
       handlePrintRecipt(stuId.student_name,stuId.monthly_fee,res.data);
     }catch(err){
@@ -262,6 +286,7 @@ useEffect(() => {
             {dataType === "payments" ? (
               <>
                 <th>Month</th>
+                <th>fees Amount</th>
                 <th>Status</th>
               </>
             ) : (
@@ -290,6 +315,7 @@ useEffect(() => {
                 {dataType === "payments" ? (
                   <>
                     <td>{getMonthName(item.month)}</td>
+                    <td>{item.monthly_fee}</td>
                     <td>{item.checkit ? "paid" : "pending"}</td>
                     <td>
         

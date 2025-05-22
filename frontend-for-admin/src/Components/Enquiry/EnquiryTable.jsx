@@ -3,7 +3,9 @@ import EnrollPopup from "./EnrollPopup";
 import es from "./EnquiryTable.module.css";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
-
+import dotenv from "dotenv";
+dotenv.config();
+const Domain = process.env.API;
 const EnquiryTable = ({
   datas,
   newEnset,
@@ -53,7 +55,7 @@ const EnquiryTable = ({
 
   const handleMarkContacted = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/stu_enq/daycare/enquiry`, {
+      await axios.patch(`${Domain}api/stu_enq/daycare/enquiry`, {
         checkit: "contacted",
         id: id
       });
@@ -72,7 +74,7 @@ const EnquiryTable = ({
 
   const handleEnrollStatusChange = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/stu_enq/daycare/enquiry`, {
+      await axios.patch(`${Domain}api/stu_enq/daycare/enquiry`, {
         checkit: "enrolled",
         id: id
       });
@@ -95,7 +97,7 @@ const EnquiryTable = ({
     );
     if (dec) {
       try {
-        await axios.patch(`http://localhost:5000/api/stu_enq/daycare/enquiry`, {
+        await axios.patch(`${Domain}api/stu_enq/daycare/enquiry`, {
           checkit: "closed",
           id: id
         });
@@ -116,7 +118,7 @@ const EnquiryTable = ({
     const c = window.confirm("Are you sure you want to delete the student?");
     if (c) {
       try {
-        await axios.delete(`http://localhost:5000/api/stu_enq/${progs}/students?id=${stuid}`);
+        await axios.delete(`${Domain}api/stu_enq/${progs}/students?id=${stuid}`);
         setEnquiryData((prevData) =>
           prevData.filter((item) => item.student_id !== stuid)
         );
@@ -294,7 +296,7 @@ const EnquiryTable = ({
 
       {isPopupOpen && (
         <EnrollPopup
-          data={selectedItem}
+          enquiry={selectedItem}
           mode={popupMode}
           onClose={() => setIsPopupOpen(false)}
           onEnroll={() => {
