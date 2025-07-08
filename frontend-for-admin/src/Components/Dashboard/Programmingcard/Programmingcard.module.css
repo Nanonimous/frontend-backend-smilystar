@@ -99,15 +99,21 @@
   }
   
 
-  .red .progress { background-color: #e57373; }
+  /* .red .progress { background-color: #e57373; }
   .blue .progress { background-color: #64b5f6; }
   .green .progress { background-color: #81c784; }
   .purple .progress { background-color: #9575cd; }
-  
+  .yellow .progress { background-color: #d3e74f; }
+  .pink .progress { background-color: #f082c6; }
+  .l_blue .progress { background-color: #4fcad5; } */
+
 
 
   .red .progresstop { background-color: #e57373; }
   .blue .progresstop { background-color: #64b5f6; }
   .green .progresstop { background-color: #81c784; }
   .purple .progresstop { background-color: #9575cd; }
+  .yellow .progresstop { background-color: #d3e74f; }
+  .pink .progresstop { background-color: #f082c6; }
+  .l_blue .progresstop { background-color: #4fcad5; }
   

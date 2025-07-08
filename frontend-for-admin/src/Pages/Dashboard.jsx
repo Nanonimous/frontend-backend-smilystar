@@ -8,9 +8,9 @@ import cardsData from "../data/StartcardsData";
 import programsData from "../data/programcardData";
 import Menu from "../Components/Layout/Sidebar/Menu";
 import axios from "axios"
-import dotenv from "dotenv";
-dotenv.config();
-const Domain = process.env.API;
+// import dotenv from "dotenv";
+// dotenv.config();
+const Domain = process.env.REACT_APP_BACKEND_URL;
 export default function Dashboard() {   
     
     const [isMenuOpen, setIsMenuOpen] = useState(false); // Track menu state
@@ -84,7 +84,7 @@ export default function Dashboard() {
                     <div className={style.programs}>
                   
                     {programsData.map((program, index) => (
-                            <ProgramCard
+                            <ProgramCard  
                                 key={index}
                                 title={program.title}
                                 icon={program.icon}

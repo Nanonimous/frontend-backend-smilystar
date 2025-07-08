@@ -3,9 +3,11 @@ import EnrollPopup from "./EnrollPopup";
 import es from "./EnquiryTable.module.css";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
-import dotenv from "dotenv";
-dotenv.config();
-const Domain = process.env.API;
+// import dotenv from "dotenv";
+// dotenv.config();
+const Domain = process.env.REACT_APP_BACKEND_URL;
+console.log("Backend URL:", process.env.REACT_APP_BACKEND_URL);
+
 const EnquiryTable = ({
   datas,
   newEnset,

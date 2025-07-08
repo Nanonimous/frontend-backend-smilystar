@@ -4,9 +4,9 @@ import axios from "axios";
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.vfs; // ✅ Correct way
-import dotenv from "dotenv";
-dotenv.config();
-const Domain = process.env.API;
+// import dotenv from "dotenv";
+// dotenv.config();
+const Domain = process.env.REACT_APP_BACKEND_URL;
 const Table = ({ datas,filterOp,presentSet,paidSet, progs, dataType,onDataUpdate }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);

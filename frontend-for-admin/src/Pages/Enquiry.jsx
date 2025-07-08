@@ -9,9 +9,9 @@ import Menu from "../Components/Layout/Sidebar/Menu";
 import Navbar from "../Components/Layout/Navbar/Navbar";
 import EnquiryTable from "../Components/Enquiry/EnquiryTable";
 
-import dotenv from "dotenv";
-dotenv.config();
-const Domain = process.env.API;
+// import dotenv from "dotenv";
+// dotenv.config();
+const Domain = process.env.REACT_APP_BACKEND_URL;
 
 
 

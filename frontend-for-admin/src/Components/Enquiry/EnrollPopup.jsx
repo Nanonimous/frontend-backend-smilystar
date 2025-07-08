@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import ep from "./EnrollPopup.module.css"; // Import CSS file
 import { useLocation, useSearchParams } from "react-router-dom"; // Import useLocation
 import axios from "axios";
-import dotenv from "dotenv";
-dotenv.config();
-const Domain = process.env.API;
+// import dotenv from "dotenv";
+// dotenv.config();
+const Domain = process.env.REACT_APP_BACKEND_URL;
 
 const EnrollPopup = ({enquiry,mode ,onClose, onEnroll ,onAdd}) => {
       const [searchParams] = useSearchParams(); // Get URL parameters

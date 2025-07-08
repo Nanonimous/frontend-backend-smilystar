@@ -1,8 +1,8 @@
 // import { Layout } from "./components/Layouts/Layout";
 import Dashboard from "../src/Pages/Dashboard.jsx";
-import Attendance from "./Pages/Attendance";
+
 import Payment from "./Pages/Payment";
-import Students from "./Pages/Students";
+
 import Enquiry from "./Pages/Enquiry";
 import Login from "./Pages/Login";
 import NotFound from "./Pages/Notfound";
