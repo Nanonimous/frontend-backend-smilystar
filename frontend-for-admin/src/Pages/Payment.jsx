@@ -89,6 +89,19 @@ export default function Payment(){
                     setTotal(data.length);
                     console.log(presentCount, data.length);
                   }
+
+                  if (filterDate == 1)
+                  {
+                            const stud = await axios.get(`${Domain}api/stu_enq/${progs}/students`);
+                          let stuId = stud.data.map((item)=>{
+                            return item.student_id
+                          })
+                          console.log(stuId);
+                        const respo2 = await axios.post(`${Domain}api/stu_enq/multi/${progs}/payments`,{
+                        "id":stuId
+                        });
+                        console.log(respo2.data);
+                  }
               }
 
             } catch (err) {
@@ -242,7 +255,7 @@ let x = (class_dates || []).filter((item) =>
     pageSize: 'A4',
     content: [
       {
-        text: `${program.toUpperCase()} (${getMonthName(filterMonth)}) ${database === "payments" ? "Fees" : "Attendance"} details`,
+        text: `${program.toUpperCase()} (${getMonthName(filterMonth)}) ${database === "payments" ? "Fees" : "Attendance"} details ${fDate[0]}`,
         style: 'header'
       },
       {
@@ -273,7 +286,7 @@ let x = (class_dates || []).filter((item) =>
     }
   };
 
-  pdfMake.createPdf(docDefinition).download(`${getMonthName(filterMonth)}_${database === "payments" ? "Payments" : "Attendance"}.pdf`);
+  pdfMake.createPdf(docDefinition).download(`${getMonthName(filterMonth)}_${database === "payments" ? "Payments" : "Attendance"}_${fDate[0]}.pdf`);
 };
 
 
