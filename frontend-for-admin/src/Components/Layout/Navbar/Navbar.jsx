@@ -18,6 +18,10 @@ export default function Navbar({notCounter}) {
         
         setShowDropdown(false); // Close dropdown after navigation
     };
+    const handleLogout = () =>{
+          document.cookie = "token=; path=/; max-age=0";
+            window.location.href = "/login";
+    }
 
     return (
         <>
@@ -51,9 +55,7 @@ export default function Navbar({notCounter}) {
                         />
                         <span className={ns.badge}>{notCounter}</span>
                     </div>
-                    <div className={ns.profile}>
-
-                    </div>
+                    <button className={ns.logout} onClick={handleLogout}>Log Out</button>
                 </div>
             </div>
         </>

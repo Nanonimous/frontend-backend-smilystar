@@ -1,0 +1,71 @@
+/* login.module.css */
+
+
+
+.loginContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f2f2f2;
+  }
+  
+  .loginForm {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.43);
+    width: 90%;
+    max-width: 400px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+  }
+  
+  .loginForm h2 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #333;
+  }
+  
+  .loginForm input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  
+  .loginForm button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .loginForm button:hover {
+    background-color: #0056b3;
+  }
+  
+  .forgotLink {
+    text-align: right;
+    margin-top: 0.5rem;
+  }
+  
+  .forgotLink a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .forgotLink a:hover {
+    text-decoration: underline;
+  }
+  
