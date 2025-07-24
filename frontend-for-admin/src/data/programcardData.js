@@ -1,6 +1,6 @@
 // data/programsData.js
 import { FaDrum, FaLanguage, FaBaby, FaMusic } from "react-icons/fa";
-const p="http://localhost:3000/";
+const p= process.env.REACT_APP_ADMIN_DOMAIN;
 const programsData = [
   {
     title: "Bharatanatyam",

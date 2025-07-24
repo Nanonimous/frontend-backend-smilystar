@@ -4,8 +4,7 @@ import axios from "axios";
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.vfs; // ✅ Correct way
-// import dotenv from "dotenv";
-// dotenv.config();
+
 const Domain = process.env.REACT_APP_BACKEND_URL;
 const Table = ({ datas,filterOp,presentSet,paidSet, progs, dataType,onDataUpdate }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -83,7 +82,10 @@ useEffect(() => {
         {
           checkit: status,
           id: id,
-        }
+        },
+        {
+    withCredentials: true, // ✅ This tells the browser to send cookies
+  }
       );
       const key = isAttendance ? "attendance_id" : "payment_id";
       const updateCount = isAttendance ? presentSet : paidSet;
@@ -130,7 +132,10 @@ useEffect(() => {
         {
           checkit: Array(patchIds.length).fill(status),
           id: patchIds,
-        }
+        },
+        {
+    withCredentials: true, // ✅ This tells the browser to send cookies
+  }
       );
       const updated = dataList.map((item) =>
         ids.includes(item[key]) ? { ...item, checkit: status } : item
@@ -222,11 +227,13 @@ useEffect(() => {
 
   const handleOneRecipt = async (stuId) =>{
     try{
-      const res = await axios.get(`${Domain}api/stu_enq/${progs}/payments?pstudId=${stuId.student_id}`);
+      const res = await axios.get(`${Domain}api/stu_enq/${progs}/payments?pstudId=${stuId.student_id}`,{
+    withCredentials: true, // ✅ This tells the browser to send cookies
+  });
 
       handlePrintRecipt(stuId.student_name,stuId.monthly_fee,res.data);
     }catch(err){
-      console.log(err)
+      console.error("handleOneRecipt",err)
     }
   }
   const allSelected = selectedItems.length === filteredData.length && filteredData.length > 0;

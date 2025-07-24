@@ -2,12 +2,10 @@ import React, { useState } from "react";
 import ep from "./EnrollPopup.module.css"; // Import CSS file
 import { useLocation, useSearchParams } from "react-router-dom"; // Import useLocation
 import axios from "axios";
-// import dotenv from "dotenv";
-// dotenv.config();
+
 const Domain = process.env.REACT_APP_BACKEND_URL;
 
 const EnrollPopup = ({enquiry,mode ,onClose, onEnroll ,onAdd}) => {
-      const [searchParams] = useSearchParams(); // Get URL parameters
           const location = useLocation(); // Get the current location
       const [formData, setFormData] = useState({
         student_name: `${enquiry?.first_name || ""} ${enquiry?.last_name || ""}`.trim(),
@@ -35,14 +33,13 @@ const EnrollPopup = ({enquiry,mode ,onClose, onEnroll ,onAdd}) => {
     setLoading(true);
     formData.age = parseInt(formData.age)
     formData.monthly_fee = parseInt(formData.monthly_fee)
-      console.log(formData)
       let prog = (mode == "addstudent") ? location.pathname.split("/").filter(Boolean)[0] : enquiry.programs
     try { 
       
-      const res = await axios.post(`${Domain}api/stu_enq/${prog}/students`,formData)
+      const res = await axios.post(`${Domain}api/stu_enq/${prog}/students`,formData,{
+    withCredentials: true, // ✅ This tells the browser to send cookies
+  })
       const result = res.data;
-      console.log("student added successfully" , result);
-
       onClose()
       {mode == "addstudent" ? onAdd(formData) : onEnroll() }
       
@@ -120,7 +117,6 @@ const EnrollPopup = ({enquiry,mode ,onClose, onEnroll ,onAdd}) => {
   <>
     <h2>Enroll Student</h2>
     <form onSubmit={handleSubmit}>
-      {/* Same as above, but with prefilled data from enquiry */}
       <label>Student Name:</label>
       <input type="text" name="student_name" value={formData.student_name} onChange={handleChange} required />
 

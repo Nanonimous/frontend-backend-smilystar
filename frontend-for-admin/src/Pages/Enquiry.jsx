@@ -19,7 +19,6 @@ const Domain = process.env.REACT_APP_BACKEND_URL;
 export default function Enquiry(){
   const [data, setData] = useState([]);
   const location = useLocation(); 
-  const [searchParams] = useSearchParams(); 
   const [totalEn, setTotalEn] = useState(0);
   const [closeEn, setCloseEn] = useState(0);
   const [newEn, setNewEn] = useState(0);
@@ -54,13 +53,12 @@ export default function Enquiry(){
     useEffect(() => {
         const fetchData = async () => {
           try {
-            console.log("hello to fetch data from table");
-            
-            const response = await axios.get(`${Domain}api/stu_enq/${program}/${tablename}`); // Replace with your API endpoint
-            console.log("API Response:", response.data); 
+            const response = await axios.get(`${Domain}api/stu_enq/${program}/${tablename}`,{
+        withCredentials: true,
+      }); // Replace with your API endpoint
+
               if (tablename === "enquiry") {
-                    
-          let a = response.data.filter(tn => tn.checkit == "new");        
+                  let a = response.data.filter(tn => tn.checkit == "new");        
           let b = response.data.filter(tn => tn.checkit == "contacted");        
           let c = response.data.filter(tn => tn.checkit == "enrolled"); 
           let d = response.data.filter(tn => tn.checkit == "closed"); 
@@ -70,7 +68,10 @@ export default function Enquiry(){
                 setEnrolledEn(c.length)
                 setContactedEn(b.length)
               } else {
+                 let a = response.data.filter(tn => tn.checkit == "new");    
+                setNewEn(a.length)
                 setTotalStud(response.data.length);
+
               }
             setData(response.data);   
           } catch (error) {

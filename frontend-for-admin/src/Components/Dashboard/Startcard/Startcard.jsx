@@ -12,7 +12,6 @@ export default function Startcard({
 var totalCards;
   const isComplete = title && icon && value && description && colorClass;
 
-  // Determine width dynamically
   const cardWidth = isComplete ? "20%" : "12%"; 
   return (
 

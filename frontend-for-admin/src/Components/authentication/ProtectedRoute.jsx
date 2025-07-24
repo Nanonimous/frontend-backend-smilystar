@@ -1,19 +1,20 @@
-
+import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-
-const getCookie = (name) => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-};
+import axios from 'axios';
 
 const ProtectedRoute = ({ children }) => {
-  const token = getCookie('token');
+  const [isValid, setIsValid] = useState(null); // null = loading
+  const domain = process.env.REACT_APP_BACKEND_URL;
+  useEffect(() => {
+    axios.get(`${domain}api/verify`, {
+      withCredentials: true, 
+    })
+    .then(() => setIsValid(true))
+    .catch(() => setIsValid(false));
+  }, []);
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-
+  if (isValid === null) return <div>Loading...</div>;
+  if (isValid === false) return <Navigate to="/login" replace />;
   return children;
 };
 

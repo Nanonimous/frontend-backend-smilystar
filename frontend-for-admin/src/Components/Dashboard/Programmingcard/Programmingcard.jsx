@@ -18,25 +18,6 @@ export default function ProgramCard({ title, dataKey, icon, description, attenda
         </div>
 
         <p className={pc.cardDescription}>{description}</p>
-
-        {/* <div className={pc.cardMetrics}>
-          <div className={pc.metric}>
-            <span>Attendance Rate</span>
-            <div className={pc.progressBar}>
-              <div className={pc.progress} style={{ width: `${attendance}%` }}></div>
-            </div>
-            <span className={pc.rate}>{attendance}%</span>
-          </div>
-
-          <div className={pc.metric}>
-            <span>Payment Rate</span>
-            <div className={pc.progressBar}>
-              <div className={pc.progress} style={{ width: `${payment}%` }}></div>
-            </div>
-            <span className={pc.rate}>{payment}%</span>
-          </div>
-        </div> */}
-
         <a href={path}>
           <button className={pc.viewButton}>
             View Students <FaArrowRight />

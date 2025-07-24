@@ -3,10 +3,8 @@ import EnrollPopup from "./EnrollPopup";
 import es from "./EnquiryTable.module.css";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
-// import dotenv from "dotenv";
-// dotenv.config();
+
 const Domain = process.env.REACT_APP_BACKEND_URL;
-console.log("Backend URL:", process.env.REACT_APP_BACKEND_URL);
 
 const EnquiryTable = ({
   datas,
@@ -60,7 +58,9 @@ const EnquiryTable = ({
       await axios.patch(`${Domain}api/stu_enq/daycare/enquiry`, {
         checkit: "contacted",
         id: id
-      });
+      },{
+    withCredentials: true, // ✅ This tells the browser to send cookies
+  });
 
       setEnquiryData((prevData) => {
         const updatedData = prevData.map((item) =>
@@ -70,7 +70,7 @@ const EnquiryTable = ({
         return updatedData;
       });
     } catch (err) {
-      console.log(err);
+      console.error("handleMarkContacted",err);
     }
   };
 
@@ -79,7 +79,9 @@ const EnquiryTable = ({
       await axios.patch(`${Domain}api/stu_enq/daycare/enquiry`, {
         checkit: "enrolled",
         id: id
-      });
+      },{
+    withCredentials: true, // ✅ This tells the browser to send cookies
+  });
 
       setEnquiryData((prevData) => {
         const updatedData = prevData.map((item) =>
@@ -89,7 +91,7 @@ const EnquiryTable = ({
         return updatedData;
       });
     } catch (err) {
-      console.log(err);
+      console.error("handleEnrollStatusChange",err);
     }
   };
 
@@ -102,7 +104,9 @@ const EnquiryTable = ({
         await axios.patch(`${Domain}api/stu_enq/daycare/enquiry`, {
           checkit: "closed",
           id: id
-        });
+        },{
+    withCredentials: true, // ✅ This tells the browser to send cookies
+  });
 
         const updatedData = enquiryData.map((item) =>
           item.sno === id ? { ...item, checkit: "closed" } : item
@@ -111,7 +115,7 @@ const EnquiryTable = ({
         updateCounts(updatedData);
         closeEnset((prev) => prev + 1);
       } catch (err) {
-        console.log(err);
+        console.error("handleCloseClick",err);
       }
     }
   };
@@ -120,13 +124,15 @@ const EnquiryTable = ({
     const c = window.confirm("Are you sure you want to delete the student?");
     if (c) {
       try {
-        await axios.delete(`${Domain}api/stu_enq/${progs}/students?id=${stuid}`);
+        await axios.delete(`${Domain}api/stu_enq/${progs}/students?id=${stuid}`,{
+    withCredentials: true, // ✅ This tells the browser to send cookies
+  });
         setEnquiryData((prevData) =>
           prevData.filter((item) => item.student_id !== stuid)
         );
         totalStudset((prev) => prev - 1);
       } catch (err) {
-        console.log(err);
+        console.error("handleDeleteClick",err);
       }
     }
   };

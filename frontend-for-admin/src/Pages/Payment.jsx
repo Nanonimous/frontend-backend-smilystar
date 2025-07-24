@@ -51,13 +51,17 @@ export default function Payment() {
         const [year, month, date] = selectedDate.toISOString().split("T")[0].split("-").map(Number);
 
         if (database === "payments") {
-          const res = await axios.get(`${Domain}api/stu_enq/${program}/payments?pMonth=${month}&pYear=${year}`);
+          const res = await axios.get(`${Domain}api/stu_enq/${program}/payments?pMonth=${month}&pYear=${year}`,{
+        withCredentials: true,
+      });
           const data = res.data;
           setTableData(data);
           setPaid(data.filter(item => item.checkit === true).length);
           setTotal(data.length);
         } else if (database === "attendance") {
-          const res = await axios.get(`${Domain}api/stu_enq/${program}/class_dates`);
+          const res = await axios.get(`${Domain}api/stu_enq/${program}/class_dates`,{
+        withCredentials: true,
+      });
           setClassDates(res.data);
 
           const dates = res.data.map(item => item.attendance_date);
@@ -66,7 +70,9 @@ export default function Payment() {
           setTableData([]);
 
           if (isClass) {
-            const res2 = await axios.get(`${Domain}api/stu_enq/${program}/attendance?aMonth=${month}&aYear=${year}&aDate=${date}`);
+            const res2 = await axios.get(`${Domain}api/stu_enq/${program}/attendance?aMonth=${month}&aYear=${year}&aDate=${date}`,{
+        withCredentials: true,
+      });
             const data = res2.data;
             setTableData(data);
             setPresent(data.filter(item => item.checkit === true).length);
@@ -78,12 +84,18 @@ export default function Payment() {
           }
         }
 
-        const paymentData = await axios.get(`${Domain}api/stu_enq/${program}/payments`);
+        const paymentData = await axios.get(`${Domain}api/stu_enq/${program}/payments`,{
+        withCredentials: true,
+      });
         if (date === 22 && paymentData.data.length === 0) {
-          const studRes = await axios.get(`${Domain}api/stu_enq/${program}/students`);
+          const studRes = await axios.get(`${Domain}api/stu_enq/${program}/students`,{
+        withCredentials: true,
+      });
           const studentIds = studRes.data.map(item => item.student_id);
 
-          await axios.post(`${Domain}api/stu_enq/multi/${progs}/payments`, { id: studentIds });
+          await axios.post(`${Domain}api/stu_enq/multi/${progs}/payments`, { id: studentIds },{
+    withCredentials: true, // ✅ This tells the browser to send cookies
+  });
         }
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -94,25 +106,42 @@ export default function Payment() {
   }, [location.pathname, selectedDate, classDay]);
 
   const handleClassDay = async () => {
-    try {
-      await axios.post(`${Domain}api/stu_enq/${progs}/class_dates`);
-      const studRes = await axios.get(`${Domain}api/stu_enq/${progs}/students`);
-      const studentIds = studRes.data.map(item => item.student_id);
+  try {
+    // ✅ Fixed: Empty body, config as 3rd argument
+    await axios.post(`${Domain}api/stu_enq/${progs}/class_dates`, {}, {
+      withCredentials: true,
+    });
 
-      await axios.post(`${Domain}api/stu_enq/multi/${progs}/attendance`, { id: studentIds });
-      setClassDay(true);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    const studRes = await axios.get(`${Domain}api/stu_enq/${progs}/students`, {
+      withCredentials: true,
+    });
+    const studentIds = studRes.data.map(item => item.student_id);
+
+    await axios.post(`${Domain}api/stu_enq/multi/${progs}/attendance`, { id: studentIds }, {
+      withCredentials: true,
+    });
+
+    setClassDay(true);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 
   const handleNoClassDay = async () => {
     const confirmDelete = window.confirm("Doing this will delete all the attendance details for this date. Are you sure?");
     if (confirmDelete) {
       try {
         const ids = tableData.map(item => item.attendance_id);
-        await axios.delete(`${Domain}api/stu_enq/multi/${progs}/attendance`, { data: { id: ids } });
-        await axios.delete(`${Domain}api/stu_enq/${progs}/class_dates?id=${selectedDate.toISOString().split("T")[0]}`);
+await axios.delete(`${Domain}api/stu_enq/multi/${progs}/attendance`, {
+  data: { id: ids },
+  withCredentials: true
+});
+
+await axios.delete(`${Domain}api/stu_enq/${progs}/class_dates?id=${selectedDate.toISOString().split("T")[0]}`, {
+  withCredentials: true
+});
+
 
         setTableData([]);
         setClassDay(false);
@@ -134,7 +163,9 @@ export default function Payment() {
 
   const getAttendance = async (month) => {
     try {
-      const res = await axios.get(`${Domain}api/stu_enq/${progs}/attendance?areciptMon=${month}`);
+      const res = await axios.get(`${Domain}api/stu_enq/${progs}/attendance?areciptMon=${month}`,{
+    withCredentials: true, // ✅ This tells the browser to send cookies
+  });
       const groupedMap = new Map();
 
       res.data.forEach(({ student_name, attendance_date, checkit }) => {

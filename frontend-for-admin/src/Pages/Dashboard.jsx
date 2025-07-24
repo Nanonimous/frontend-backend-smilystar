@@ -3,13 +3,12 @@ import style from '../Styles/Dashboard.module.css';
 import Navbar from "../Components/Layout/Navbar/Navbar";
 import Startcard from '../Components/Dashboard/Startcard/Startcard';
 import ProgramCard from "../Components/Dashboard/Programmingcard/Programmingcard";
-import Quickaction from "../Components/Dashboard/Quickaction/Quickaction";
 import cardsData from "../data/StartcardsData";
 import programsData from "../data/programcardData";
 import Menu from "../Components/Layout/Sidebar/Menu";
 import axios from "axios"
-// import dotenv from "dotenv";
-// dotenv.config();
+
+
 const Domain = process.env.REACT_APP_BACKEND_URL;
 export default function Dashboard() {   
     
@@ -22,10 +21,10 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchData = async () => {
           try {
-            console.log("fetch from the enquiry");
       
-            const response = await axios.get(`${Domain}api/stu_enq/daycare/enquiry`);
-            console.log("API Response:", response.data);
+            const response = await axios.get(`${Domain}api/stu_enq/daycare/enquiry`,{
+              withCredentials: true, 
+            });
       
             const not = response.data.filter(tn => tn.checkit === "new");
             setNotis(not.length);
@@ -34,7 +33,9 @@ export default function Dashboard() {
             
             const studentCounts = await Promise.all(
               progs.map(async (program) => {
-                const res = await axios.get(`${Domain}api/stu_enq/${program}/students`);
+                const res = await axios.get(`${Domain}api/stu_enq/${program}/students`,{
+      withCredentials: true, 
+    });
                 return res.data.length;
               })
             );
@@ -48,8 +49,6 @@ export default function Dashboard() {
       
         fetchData();
       }, []);
-      
-    console.log(stuCount)
 
     return (
         <>
@@ -73,7 +72,7 @@ export default function Dashboard() {
                                     key={index}
                                     title={card.title}
                                     icon={card.icon}
-                                    value={card.value}
+                                    value={stuCount.reduce((a, b) => a + b, 0)}
                                     description={card.description}
                                     colorClass={card.colorClass}
                                     />
@@ -100,8 +99,6 @@ export default function Dashboard() {
                             ))}
 
                 </div>
-                    {/* <h2>Quick Actions</h2>
-                        <Quickaction /> */}
                 </div>
             </div>
 

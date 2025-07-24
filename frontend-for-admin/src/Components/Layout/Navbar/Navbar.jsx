@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ns from './Navbar.module.css';
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation} from "react-router-dom";
 
 export default function Navbar({notCounter}) {
     const navigate = useNavigate(); 
+      const location = useLocation(); // 🔁 Better than window.location.href
     const [showDropdown, setShowDropdown] = useState(false);
-
+    const [ispage,setispage] = useState(false);
     const toggleDropdown = () => {
         setShowDropdown(prev => !prev);
     };
@@ -21,8 +22,14 @@ export default function Navbar({notCounter}) {
     const handleLogout = () =>{
           document.cookie = "token=; path=/; max-age=0";
             window.location.href = "/login";
-    }
+    }   
 
+useEffect(() => {
+    const path = location.pathname;
+    if (path === "/") {
+      setispage(true);
+    }
+  }, [location.pathname]);
     return (
         <>
             <div className={ns.nav}>
@@ -46,15 +53,16 @@ export default function Navbar({notCounter}) {
                     </ul>
                     </div>
 
-
-                    <div className={ns.notification}>
+                     {ispage && (<div className={ns.notification}>
                         <img 
                             src="images/navbar_img/bell.png" 
                             alt="notification icon" 
                             className={ns.icon}
+                            onClick={()=>navigate("/enquiry")}
                         />
                         <span className={ns.badge}>{notCounter}</span>
-                    </div>
+                    </div>)}
+                    
                     <button className={ns.logout} onClick={handleLogout}>Log Out</button>
                 </div>
             </div>

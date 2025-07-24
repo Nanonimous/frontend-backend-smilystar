@@ -28,10 +28,6 @@ const handleDateChange = (event) => {
     setSelectedDate(new Date(value)); // Date input includes full date
   }
 };
-
-  console.log("test1",selectedDate.toISOString().split("T")[0])
-
-  console.log("test1",new Date().toISOString().split("T")[0])
   const now = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
 const istNow = new Date(now);
 
@@ -40,7 +36,6 @@ const mm = String(istNow.getMonth() + 1).padStart(2, "0");
 const dd = String(istNow.getDate()).padStart(2, "0");
 
 const istDateInput = `${yyyy}-${mm}-${dd}`;
- // "2025-05-20"
 
   return (
     <div className="date-filter-container">

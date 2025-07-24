@@ -6,13 +6,13 @@ import axios from 'axios'; // <--- Add this at the top
 const Authentication = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
+  const server = process.env.REACT_APP_BACKEND_URL;
   const handleSubmit = async (e) => {
     e.preventDefault();
   
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/login',
+        `${server}api/login`,
         {
           username,
           password,
@@ -22,9 +22,6 @@ const Authentication = () => {
         }
       );
       
-    // ✅ Set it as a cookie (accessible in JS — not secure for production)
-    document.cookie = `token=${response.data.token}; path=/; max-age=3600`;
-      // You can redirect or show success message here
       window.location.href = '/'; // optional
     } catch (error) {
       console.error('Login failed:', error.response?.data || error.message);
